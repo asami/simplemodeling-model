@@ -1,0 +1,277 @@
+Address
+=======
+
+This document defines the Address value-object family as a literate model.
+It preserves executable structure, machine-consumable metadata, and human
+explanation in one source.
+
+The model is organized around a root value object, `Address`, and related
+reusable value objects referenced from its attributes.
+
+Important help-oriented text is kept in reserved descriptive sections under
+`# VALUE`. Longer rationale, examples, and integration guidance are written as
+narrative before and after structural definitions.
+
+The design follows these principles:
+
+- alignment with widely adopted standards
+- international neutrality across different address systems
+- separation of structure from formatting and validation
+- support for multilingual and country-specific interpretation
+
+Address is the root value object for a portable postal-address model.
+It composes smaller reusable value objects while keeping formatting and
+country-specific rules outside the core structural definition.
+
+The model is designed to preserve address semantics first and rendering rules
+second.
+
+`addressCountry` drives country-specific interpretation.
+Formatting and country-dependent rule checks are out of scope of this core
+value object.
+
+# VALUE
+
+## Address
+
+### SUMMARY
+
+Structured postal destination value.
+
+### ATTRIBUTE
+
+- name: addressCountry
+  type: CountryCode
+  multiplicity: "1"
+- name: postalCode
+  type: PostalCode
+  multiplicity: "?"
+- name: addressRegion
+  type: Region
+  multiplicity: "?"
+- name: addressLocality
+  type: Locality
+  multiplicity: "?"
+- name: addressSubLocality
+  type: SubLocality
+  multiplicity: "?"
+- name: streetAddress
+  type: StreetAddress
+  multiplicity: "1"
+- name: extendedAddress
+  type: ExtendedAddress
+  multiplicity: "?"
+
+### DESCRIPTION
+
+Address is a structured postal destination value.
+It represents address semantics as composable typed fields, not a single
+formatted string.
+
+## CountryCode
+
+### SUMMARY
+
+Two-letter country code.
+
+### ATTRIBUTE
+
+- name: value
+  type: String
+  multiplicity: "1"
+  min: 2
+  max: 2
+  pattern: "^[A-Z]{2}$"
+
+### DESCRIPTION
+
+Two-letter country identifier.
+
+## PostalCode
+
+### SUMMARY
+
+Postal or ZIP code value.
+
+### ATTRIBUTE
+
+- name: value
+  type: String
+  multiplicity: "1"
+
+### DESCRIPTION
+
+Postal or ZIP code. Format is country-dependent.
+
+## Region
+
+### SUMMARY
+
+Top-level administrative division.
+
+### ATTRIBUTE
+
+- name: value
+  type: String
+  multiplicity: "1"
+
+### DESCRIPTION
+
+Top-level administrative division (state, prefecture, or province).
+
+## Locality
+
+### SUMMARY
+
+City or equivalent locality.
+
+### ATTRIBUTE
+
+- name: value
+  type: String
+  multiplicity: "1"
+
+### DESCRIPTION
+
+City or equivalent locality.
+
+## SubLocality
+
+### SUMMARY
+
+Subdivision within a locality.
+
+### ATTRIBUTE
+
+- name: value
+  type: String
+  multiplicity: "1"
+
+### DESCRIPTION
+
+Subdivision within locality (ward, district, or neighborhood).
+
+## StreetAddress
+
+### SUMMARY
+
+Primary street-level address value.
+
+### ATTRIBUTE
+
+- name: value
+  type: String
+  multiplicity: "1"
+
+### DESCRIPTION
+
+Primary street-level address expression.
+
+## ExtendedAddress
+
+### SUMMARY
+
+Additional address-detail value.
+
+### ATTRIBUTE
+
+- name: value
+  type: String
+  multiplicity: "1"
+
+### DESCRIPTION
+
+Additional address details (building, floor, apartment, and similar details).
+
+
+# Example
+
+## Address
+
+addressCountry: JP
+postalCode: "160-0022"
+addressRegion: Tokyo
+addressLocality: Shinjuku-ku
+addressSubLocality: Shinjuku
+streetAddress: "1-2-3"
+extendedAddress: "Building A 101"
+
+
+# Background
+
+## International Standards
+
+This model uses standards as interoperability anchors:
+
+- ISO 3166-1 (country codes)
+- schema.org PostalAddress (web structured data)
+- vCard ADR (RFC 6350)
+
+
+## schema.org
+
+PostalAddress is treated as the canonical web-facing mapping model.
+
+
+## vCard
+
+vCard ADR positional form:
+
+ADR: POBOX;EXT;STREET;LOCALITY;REGION;POSTALCODE;COUNTRY
+
+The model is designed for reversible mapping where possible.
+
+
+## ISO
+
+Country identity is based on ISO 3166-1 alpha-2.
+
+
+# Internationalization
+
+Address structure differs by country.
+Country-specific interpretation is delegated using `addressCountry`.
+
+## Japan
+
+- addressRegion -> prefecture
+- addressLocality -> city
+- addressSubLocality -> ward
+- streetAddress -> block/number
+
+## UnitedStates
+
+- addressRegion -> state
+- addressLocality -> city
+- streetAddress -> street + number
+
+
+# Mapping
+
+## schema.org
+
+- addressCountry -> addressCountry
+- postalCode -> postalCode
+- addressRegion -> addressRegion
+- addressLocality -> addressLocality
+- streetAddress -> streetAddress
+
+`addressSubLocality` and `extendedAddress` are mapped by integration policy.
+
+## vCard
+
+- extendedAddress -> EXT
+- streetAddress -> STREET
+- addressLocality -> LOCALITY
+- addressRegion -> REGION
+- postalCode -> POSTALCODE
+- addressCountry -> COUNTRY
+
+
+# Validation
+
+Country-specific validation is intentionally outside the core Address value
+model.
+
+- structural validation in this model covers type shape and shared constraints
+- country-specific postal rules are delegated to downstream validation policy
