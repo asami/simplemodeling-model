@@ -9,7 +9,6 @@ import io.circe.Codec
 /*
  * @since   Apr. 11, 2025
  *  version Feb. 27, 2026
- *  version Mar. 30, 2026
  * @version Mar. 31, 2026
  * @author  ASAMI, Tomoharu
  */
