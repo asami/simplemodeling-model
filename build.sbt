@@ -8,7 +8,7 @@ lazy val root = project
   .settings(
     organization := "org.simplemodeling",
     name := "simplemodeling-model",
-    version := "0.1.0",
+    version := "0.1.1-SNAPSHOT",
 
     scalaVersion := scala3Version,
 
@@ -32,7 +32,7 @@ lazy val root = project
       "io.circe" %% "circe-generic" % "0.14.6",
       "io.circe" %% "circe-parser"  % "0.14.6",
 
-      "org.goldenport" %% "goldenport-core" % "0.3.0",
+      "org.goldenport" %% "goldenport-core" % "0.3.1-SNAPSHOT",
 
       // Testing
       "org.scalatest" %% "scalatest" % "3.2.18" % Test,

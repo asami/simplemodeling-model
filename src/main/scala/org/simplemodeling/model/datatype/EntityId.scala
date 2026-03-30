@@ -9,23 +9,19 @@ import io.circe.Codec
 /*
  * @since   Apr. 11, 2025
  *  version Feb. 27, 2026
- * @version Mar. 29, 2026
+ * @version Mar. 30, 2026
  * @author  ASAMI, Tomoharu
  */
 final case class EntityId(
   major: String,
   minor: String,
-  collection: EntityCollectionId
-) extends UniversalId(major, minor, "entity", collection.name) derives Codec.AsObject {
-  private var _parsedValue: Option[String] = None
-
-  override def value: String =
-    _parsedValue.getOrElse(super.value)
-
-  private[datatype] def withParsedValue(p: String): EntityId = {
-    _parsedValue = Some(p)
-    this
-  }
+  collection: EntityCollectionId,
+  timestamp: Option[java.time.Instant] = None,
+  entropy: Option[String] = None
+) extends UniversalId(major, minor, "entity", collection.name, timestamp, entropy) derives Codec.AsObject {
+  // Canonical machine-facing identifier string is `value`.
+  // Use `value` for persistence keys, lookup keys, joins, query parameters, and map keys.
+  // `print` is presentation-oriented, while `show` / `toString` are debugger-oriented summaries.
 }
 
 object EntityId {
@@ -57,8 +53,10 @@ object EntityId {
             EntityId(
               major = parts.major,
               minor = parts.minor,
-              collection = EntityCollectionId(parts.major, parts.minor, name)
-            ).withParsedValue(parts.value)
+              collection = EntityCollectionId(parts.major, parts.minor, name),
+              timestamp = Some(parts.timestamp),
+              entropy = Some(parts.entropy)
+            )
           )
         case None =>
           Consequence.failure(s"Invalid EntityId format: missing collection name in '$s'")
