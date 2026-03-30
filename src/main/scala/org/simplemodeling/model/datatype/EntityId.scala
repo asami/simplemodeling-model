@@ -9,7 +9,8 @@ import io.circe.Codec
 /*
  * @since   Apr. 11, 2025
  *  version Feb. 27, 2026
- * @version Mar. 30, 2026
+ *  version Mar. 30, 2026
+ * @version Mar. 31, 2026
  * @author  ASAMI, Tomoharu
  */
 final case class EntityId(
@@ -69,7 +70,14 @@ final case class EntityCollectionId(
   major: String,
   minor: String,
   name: String,
-) extends UniversalId(major, minor, "entity_collection", name) derives Codec.AsObject
+) extends UniversalId(
+  major,
+  minor,
+  "entity_collection",
+  name,
+  Some(org.goldenport.id.UniversalId.StableTimestamp),
+  Some(org.goldenport.id.UniversalId.StableEntropy)
+) derives Codec.AsObject
 
 object EntityCollectionId {
   given ValueReader[EntityCollectionId] with {
@@ -88,7 +96,14 @@ final case class AggregateCollectionId(
   major: String,
   minor: String,
   name: String,
-) extends UniversalId(major, minor, "aggregate_collection", name) derives Codec.AsObject
+) extends UniversalId(
+  major,
+  minor,
+  "aggregate_collection",
+  name,
+  Some(org.goldenport.id.UniversalId.StableTimestamp),
+  Some(org.goldenport.id.UniversalId.StableEntropy)
+) derives Codec.AsObject
 
 object AggregateCollectionId {
   given ValueReader[AggregateCollectionId] with {
@@ -107,7 +122,14 @@ final case class ViewCollectionId(
   major: String,
   minor: String,
   name: String,
-) extends UniversalId(major, minor, "view_collection", name) derives Codec.AsObject
+) extends UniversalId(
+  major,
+  minor,
+  "view_collection",
+  name,
+  Some(org.goldenport.id.UniversalId.StableTimestamp),
+  Some(org.goldenport.id.UniversalId.StableEntropy)
+) derives Codec.AsObject
 
 object ViewCollectionId {
   given ValueReader[ViewCollectionId] with {
