@@ -11,7 +11,8 @@ import org.simplemodeling.model.value.*
 
 /*
  * @since   Apr.  2, 2026
- * @version Apr.  2, 2026
+ *  version Apr.  2, 2026
+ * @version Apr.  3, 2026
  * @author  ASAMI, Tomoharu
  */
 type NameAttributes = org.simplemodeling.model.value.NameAttributes
@@ -19,7 +20,7 @@ given ValueReader[NameAttributes] =
   summon[ValueReader[org.simplemodeling.model.value.NameAttributes]].asInstanceOf[ValueReader[NameAttributes]]
 
 object NameAttributes {
-  export org.simplemodeling.model.value.NameAttributes.{Holder, BareHolder}
+  export org.simplemodeling.model.value.NameAttributes.{Holder, BareHolder, Builder}
 
   def parse(p: Any): Consequence[NameAttributes] =
     summon[ValueReader[org.simplemodeling.model.value.NameAttributes]].readC(p)
@@ -58,7 +59,7 @@ given ValueReader[DescriptiveAttributes] =
   summon[ValueReader[org.simplemodeling.model.value.DescriptiveAttributes]].asInstanceOf[ValueReader[DescriptiveAttributes]]
 
 object DescriptiveAttributes {
-  export org.simplemodeling.model.value.DescriptiveAttributes.{Holder, BareHolder, empty}
+  export org.simplemodeling.model.value.DescriptiveAttributes.{Holder, BareHolder, Builder, empty}
 
   def parse(p: Any): Consequence[DescriptiveAttributes] =
     summon[ValueReader[org.simplemodeling.model.value.DescriptiveAttributes]].readC(p)
