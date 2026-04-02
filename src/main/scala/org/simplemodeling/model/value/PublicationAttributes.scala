@@ -5,7 +5,9 @@ import java.time.ZonedDateTime
 /*
  * @since   Aug.  1, 2025
  *  version Aug.  2, 2025
- * @version Mar. 29, 2026
+ *  version Mar. 29, 2026
+ * @version Apr.  2, 2026
+ *  version Aug.  2, 2025
  * @author  ASAMI, Tomoharu
  */
 case class PublicationAttributes(
@@ -18,6 +20,8 @@ case class PublicationAttributes(
 
 object PublicationAttributes {
   trait Holder {
-    protected def publication_Attributes: PublicationAttributes
+    def publicationAttributes: PublicationAttributes
+
+    protected def publication_Attributes: PublicationAttributes = publicationAttributes
   }
 }

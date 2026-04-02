@@ -17,17 +17,18 @@ import org.simplemodeling.model.value.ContextualAttributes
 
 /*
  * @since   Mar. 23, 2026
- * @version Mar. 29, 2026
+ *  version Mar. 29, 2026
+ * @version Apr.  2, 2026
  * @author  ASAMI, Tomoharu
  */
 trait SimpleObjectDefaults extends SimpleObject {
-  protected def name_Attributes: NameAttributes =
+  override def nameAttributes: NameAttributes =
     NameAttributes.simple(Name("unknown"))
 
-  protected def descriptive_Attributes: DescriptiveAttributes =
+  override def descriptiveAttributes: DescriptiveAttributes =
     DescriptiveAttributes.empty
 
-  protected def lifecycle_Attributes: LifecycleAttributes =
+  override def lifecycleAttributes: LifecycleAttributes =
     LifecycleAttributes(
       createdAt = ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC),
       updatedAt = None,
@@ -37,7 +38,7 @@ trait SimpleObjectDefaults extends SimpleObject {
       aliveness = org.simplemodeling.model.statemachine.Aliveness.default
     )
 
-  protected def publication_Attributes: PublicationAttributes =
+  override def publicationAttributes: PublicationAttributes =
     PublicationAttributes(
       publishAt = None,
       publicAt = None,
@@ -46,7 +47,7 @@ trait SimpleObjectDefaults extends SimpleObject {
       endAt = None
     )
 
-  protected def security_Attributes: SecurityAttributes = {
+  override def securityAttributes: SecurityAttributes = {
     val sid = ObjectId(Identifier("system"))
     SecurityAttributes(
       ownerId = sid,
@@ -60,13 +61,13 @@ trait SimpleObjectDefaults extends SimpleObject {
     )
   }
 
-  protected def resource_Attributes: ResourceAttributes =
+  override def resourceAttributes: ResourceAttributes =
     ResourceAttributes()
 
-  protected def audit_Attributes: AuditAttributes =
+  override def auditAttributes: AuditAttributes =
     AuditAttributes()
 
-  protected def media_Attributes: MediaAttributes =
+  override def mediaAttributes: MediaAttributes =
     MediaAttributes(
       url = None,
       images = Vector.empty,
@@ -75,6 +76,6 @@ trait SimpleObjectDefaults extends SimpleObject {
       atathments = Vector.empty
     )
 
-  protected def contextual_Attribute: ContextualAttributes =
+  override def contextualAttribute: ContextualAttributes =
     ContextualAttributes()
 }

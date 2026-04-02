@@ -9,7 +9,10 @@ import org.simplemodeling.model.statemachine.Aliveness
  * @since   Aug.  1, 2025
  *  version Aug.  4, 2025
  *  version Feb. 19, 2026
- * @version Mar. 29, 2026
+ *  version Mar. 29, 2026
+ * @version Apr.  2, 2026
+ *  version Aug.  4, 2025
+ *  version Feb. 19, 2026
  * @author  ASAMI, Tomoharu
  */
 case class LifecycleAttributes(
@@ -23,6 +26,8 @@ case class LifecycleAttributes(
 
 object LifecycleAttributes {
   trait Holder {
-    protected def lifecycle_Attributes: LifecycleAttributes
+    def lifecycleAttributes: LifecycleAttributes
+
+    protected def lifecycle_Attributes: LifecycleAttributes = lifecycleAttributes
   }
 }

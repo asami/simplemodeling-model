@@ -4,7 +4,8 @@ import java.net.URL
 
 /*
  * @since   Aug.  2, 2025
- * @version Mar. 29, 2026
+ *  version Mar. 29, 2026
+ * @version Apr.  2, 2026
  * @author  ASAMI, Tomoharu
  */
 case class MediaAttributes(
@@ -17,6 +18,8 @@ case class MediaAttributes(
 
 object MediaAttributes {
   trait Holder {
-    protected def media_Attributes: MediaAttributes
+    def mediaAttributes: MediaAttributes
+
+    protected def media_Attributes: MediaAttributes = mediaAttributes
   }
 }
