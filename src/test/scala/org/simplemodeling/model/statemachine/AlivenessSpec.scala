@@ -1,6 +1,7 @@
 package org.simplemodeling.model.statemachine
 
 import org.scalacheck.Gen
+import org.goldenport.convert.ValueReader
 import org.scalatest.GivenWhenThen
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -55,6 +56,19 @@ class AlivenessSpec
         Then("state name is lowercase and db value round-trips")
         name shouldBe name.toLowerCase
         parsed shouldBe Some(state)
+      }
+    }
+
+    "read db values through ValueReader" in {
+      Given("an arbitrary Aliveness state")
+      val stategen = Gen.oneOf(Aliveness.values.toSeq)
+
+      forAll(stategen) { state =>
+        When("decoding from numeric db value")
+        val parsed = summon[ValueReader[Aliveness]].readC(state.dbValue)
+
+        Then("the same state is restored")
+        parsed.toOption shouldBe Some(state)
       }
     }
 
