@@ -5,13 +5,18 @@ import org.scalatest.matchers.should.Matchers
 
 /*
  * @since   Mar. 25, 2026
- * @version Mar. 29, 2026
+ * @version Apr.  3, 2026
  * @author  ASAMI, Tomoharu
  */
 class GeneratedAddressBuilderSpec extends AnyFlatSpec with Matchers {
   private def generatedAddressAvailable: Boolean =
     scala.util.Try(Class.forName("domain.value.Address$")).isSuccess &&
       scala.util.Try(Class.forName("domain.value.CountryCode$")).isSuccess
+
+  private def _new_typed_value(name: String, value: String): AnyRef = {
+    val module = Class.forName(s"domain.value.${name}$$").getField("MODULE$").get(null)
+    module.getClass.getMethod("apply", classOf[String]).invoke(module, value).asInstanceOf[AnyRef]
+  }
 
   "generated CountryCode builder" should "validate the pattern at value creation time" in {
     if (!generatedAddressAvailable) cancel("generated address model is not available")
@@ -30,6 +35,8 @@ class GeneratedAddressBuilderSpec extends AnyFlatSpec with Matchers {
     if (!generatedAddressAvailable) cancel("generated address model is not available")
 
     val builderClass = Class.forName("domain.value.Address$Builder")
+    val countryCodeClass = Class.forName("domain.value.CountryCode")
+    val postalCodeClass = Class.forName("domain.value.PostalCode")
     val builder = builderClass
       .getDeclaredConstructor(
         Class.forName("scala.Option"),
@@ -51,8 +58,12 @@ class GeneratedAddressBuilderSpec extends AnyFlatSpec with Matchers {
         builderClass.getMethod("$lessinit$greater$default$7").invoke(null),
         builderClass.getMethod("$lessinit$greater$default$8").invoke(null)
       )
-    builder.getClass.getMethod("withAddressCountry", classOf[String]).invoke(builder, "JP")
-    builder.getClass.getMethod("withPostalCode", classOf[String]).invoke(builder, "160-0022")
+    builder.getClass
+      .getMethod("withAddressCountry", countryCodeClass)
+      .invoke(builder, _new_typed_value("CountryCode", "JP"))
+    builder.getClass
+      .getMethod("withPostalCode", postalCodeClass)
+      .invoke(builder, _new_typed_value("PostalCode", "160-0022"))
     val result = intercept[java.lang.reflect.InvocationTargetException] {
       builder.getClass.getMethod("build").invoke(builder)
     }

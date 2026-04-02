@@ -5,13 +5,18 @@ import org.scalatest.matchers.should.Matchers
 
 /*
  * @since   Mar. 25, 2026
- * @version Mar. 29, 2026
+ * @version Apr.  3, 2026
  * @author  ASAMI, Tomoharu
  */
 class GeneratedAddressReferenceSpec extends AnyFlatSpec with Matchers {
   private def generatedAddressAvailable: Boolean =
     scala.util.Try(Class.forName("domain.value.Address$")).isSuccess &&
       scala.util.Try(Class.forName("domain.value.CountryCode$")).isSuccess
+
+  private def _new_typed_value(name: String, value: String): AnyRef = {
+    val module = Class.forName(s"domain.value.${name}$$").getField("MODULE$").get(null)
+    module.getClass.getMethod("apply", classOf[String]).invoke(module, value).asInstanceOf[AnyRef]
+  }
 
   "generated address value objects" should "be referenceable from handwritten code" in {
     if (!generatedAddressAvailable) cancel("generated address model is not available")
@@ -21,24 +26,33 @@ class GeneratedAddressReferenceSpec extends AnyFlatSpec with Matchers {
     val countryValue = country.getClass.getMethod("value").invoke(country)
 
     val addressModule = Class.forName("domain.value.Address$").getField("MODULE$").get(null)
-    val address = addressModule.getClass.getMethods.find { m =>
-      m.getName == "apply" && m.getParameterCount == 7
-    }.get.invoke(
+    val address = addressModule.getClass.getMethod(
+      "apply",
+      Class.forName("domain.value.CountryCode"),
+      Class.forName("domain.value.PostalCode"),
+      Class.forName("domain.value.Region"),
+      Class.forName("domain.value.Locality"),
+      Class.forName("domain.value.SubLocality"),
+      Class.forName("domain.value.StreetAddress"),
+      Class.forName("domain.value.ExtendedAddress")
+    ).invoke(
       addressModule,
-      "JP",
-      "160-0022",
-      "Tokyo",
-      "Shinjuku-ku",
-      "Shinjuku",
-      "1-2-3",
-      "Building A 101"
+      _new_typed_value("CountryCode", "JP"),
+      _new_typed_value("PostalCode", "160-0022"),
+      _new_typed_value("Region", "Tokyo"),
+      _new_typed_value("Locality", "Shinjuku-ku"),
+      _new_typed_value("SubLocality", "Shinjuku"),
+      _new_typed_value("StreetAddress", "1-2-3"),
+      _new_typed_value("ExtendedAddress", "Building A 101")
     )
 
     val addressCountry = address.getClass.getMethod("addressCountry").invoke(address)
     val postalCode = address.getClass.getMethod("postalCode").invoke(address)
+    val addressCountryValue = addressCountry.getClass.getMethod("value").invoke(addressCountry)
+    val postalCodeValue = postalCode.getClass.getMethod("value").invoke(postalCode)
 
     countryValue shouldBe "JP"
-    addressCountry shouldBe "JP"
-    postalCode shouldBe "160-0022"
+    addressCountryValue shouldBe "JP"
+    postalCodeValue shouldBe "160-0022"
   }
 }
