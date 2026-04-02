@@ -12,7 +12,8 @@ import org.simplemodeling.model.value.SecurityAttributesQuery
 
 /*
  * @since   Mar. 23, 2026
- * @version Mar. 29, 2026
+ *  version Mar. 29, 2026
+ * @version Apr.  2, 2026
  * @author  ASAMI, Tomoharu
  */
 abstract class SimpleObjectQuery {
@@ -20,30 +21,30 @@ abstract class SimpleObjectQuery {
   // This is completed first in the current style to prioritize execution.
   // A future phase will reorganize and integrate it toward the same
   // ValueObject-composition design direction as SimpleObject.
-  def name_Attributes: NameAttributesQuery =
+  def nameAttributes: NameAttributesQuery =
     NameAttributesQuery()
 
-  def descriptive_Attributes: DescriptiveAttributesQuery =
+  def descriptiveAttributes: DescriptiveAttributesQuery =
     DescriptiveAttributesQuery()
 
-  def lifecycle_Attributes: LifecycleAttributesQuery =
+  def lifecycleAttributes: LifecycleAttributesQuery =
     LifecycleAttributesQuery()
 
-  def publication_Attributes: PublicationAttributesQuery =
+  def publicationAttributes: PublicationAttributesQuery =
     PublicationAttributesQuery()
 
-  def security_Attributes: SecurityAttributesQuery =
+  def securityAttributes: SecurityAttributesQuery =
     SecurityAttributesQuery()
 
-  def resource_Attributes: ResourceAttributesQuery =
+  def resourceAttributes: ResourceAttributesQuery =
     ResourceAttributesQuery()
 
-  def audit_Attributes: AuditAttributesQuery =
+  def auditAttributes: AuditAttributesQuery =
     AuditAttributesQuery()
 
-  def media_Attributes: MediaAttributesQuery =
+  def mediaAttributes: MediaAttributesQuery =
     MediaAttributesQuery()
 
-  def contextual_Attribute: ContextualAttributesQuery =
+  def contextualAttribute: ContextualAttributesQuery =
     ContextualAttributesQuery()
 }

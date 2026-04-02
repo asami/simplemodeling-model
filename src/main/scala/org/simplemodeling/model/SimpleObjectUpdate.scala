@@ -12,7 +12,8 @@ import org.simplemodeling.model.value.SecurityAttributesUpdate
 
 /*
  * @since   Mar. 23, 2026
- * @version Mar. 29, 2026
+ *  version Mar. 29, 2026
+ * @version Apr.  2, 2026
  * @author  ASAMI, Tomoharu
  */
 abstract class SimpleObjectUpdate {
@@ -21,30 +22,30 @@ abstract class SimpleObjectUpdate {
   // temporary completed form.
   // In a later phase, this will be moved toward a more consistent
   // ValueObject-composition model, aligned with SimpleObject itself.
-  def name_Attributes: NameAttributesUpdate =
+  def nameAttributes: NameAttributesUpdate =
     NameAttributesUpdate()
 
-  def descriptive_Attributes: DescriptiveAttributesUpdate =
+  def descriptiveAttributes: DescriptiveAttributesUpdate =
     DescriptiveAttributesUpdate()
 
-  def lifecycle_Attributes: LifecycleAttributesUpdate =
+  def lifecycleAttributes: LifecycleAttributesUpdate =
     LifecycleAttributesUpdate()
 
-  def publication_Attributes: PublicationAttributesUpdate =
+  def publicationAttributes: PublicationAttributesUpdate =
     PublicationAttributesUpdate()
 
-  def security_Attributes: SecurityAttributesUpdate =
+  def securityAttributes: SecurityAttributesUpdate =
     SecurityAttributesUpdate()
 
-  def resource_Attributes: ResourceAttributesUpdate =
+  def resourceAttributes: ResourceAttributesUpdate =
     ResourceAttributesUpdate()
 
-  def audit_Attributes: AuditAttributesUpdate =
+  def auditAttributes: AuditAttributesUpdate =
     AuditAttributesUpdate()
 
-  def media_Attributes: MediaAttributesUpdate =
+  def mediaAttributes: MediaAttributesUpdate =
     MediaAttributesUpdate()
 
-  def contextual_Attribute: ContextualAttributesUpdate =
+  def contextualAttribute: ContextualAttributesUpdate =
     ContextualAttributesUpdate()
 }

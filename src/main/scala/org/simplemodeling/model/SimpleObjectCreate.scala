@@ -17,7 +17,8 @@ import org.simplemodeling.model.value.SecurityAttributes
 
 /*
  * @since   Mar. 23, 2026
- * @version Mar. 29, 2026
+ *  version Mar. 29, 2026
+ * @version Apr.  2, 2026
  * @author  ASAMI, Tomoharu
  */
 abstract class SimpleObjectCreate {
@@ -25,13 +26,13 @@ abstract class SimpleObjectCreate {
   // Current priority is executable behavior.
   // This create model is kept in the current shape first, and will be
   // refactored toward fuller ValueObject composition in a later phase.
-  def name_Attributes: NameAttributes =
+  def nameAttributes: NameAttributes =
     NameAttributes.simple(Name("unknown"))
 
-  def descriptive_Attributes: DescriptiveAttributes =
+  def descriptiveAttributes: DescriptiveAttributes =
     DescriptiveAttributes.empty
 
-  def lifecycle_Attributes: LifecycleAttributes =
+  def lifecycleAttributes: LifecycleAttributes =
     LifecycleAttributes(
       createdAt = ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC),
       updatedAt = None,
@@ -41,7 +42,7 @@ abstract class SimpleObjectCreate {
       aliveness = org.simplemodeling.model.statemachine.Aliveness.default
     )
 
-  def publication_Attributes: PublicationAttributes =
+  def publicationAttributes: PublicationAttributes =
     PublicationAttributes(
       publishAt = None,
       publicAt = None,
@@ -50,7 +51,7 @@ abstract class SimpleObjectCreate {
       endAt = None
     )
 
-  def security_Attributes: SecurityAttributes = {
+  def securityAttributes: SecurityAttributes = {
     val sid = ObjectId(Identifier("system"))
     SecurityAttributes(
       ownerId = sid,
@@ -64,13 +65,13 @@ abstract class SimpleObjectCreate {
     )
   }
 
-  def resource_Attributes: ResourceAttributes =
+  def resourceAttributes: ResourceAttributes =
     ResourceAttributes()
 
-  def audit_Attributes: AuditAttributes =
+  def auditAttributes: AuditAttributes =
     AuditAttributes()
 
-  def media_Attributes: MediaAttributes =
+  def mediaAttributes: MediaAttributes =
     MediaAttributes(
       url = None,
       images = Vector.empty,
@@ -79,6 +80,6 @@ abstract class SimpleObjectCreate {
       atathments = Vector.empty
     )
 
-  def contextual_Attribute: ContextualAttributes =
+  def contextualAttribute: ContextualAttributes =
     ContextualAttributes()
 }

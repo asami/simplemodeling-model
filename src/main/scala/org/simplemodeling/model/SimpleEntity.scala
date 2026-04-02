@@ -13,5 +13,5 @@ abstract class SimpleEntity extends SimpleObject {
 
   // Exposes title as a first-class SimpleEntity attribute for model-generated entities.
   def title: String =
-    name_Attributes.title.map(_.value.displayMessage).getOrElse("")
+    nameAttributes.title.map(_.value.displayMessage).getOrElse("")
 }
