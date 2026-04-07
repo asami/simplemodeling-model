@@ -4,6 +4,18 @@ updated_at=2026-03-25
 status=completed
 target=src/main/cozy/address.cml
 
+## Stage status
+
+This document records the Stage 1 roadmap and baseline closure for
+`address.cml`.
+
+It should be read as the roadmap for the first executable milestone, not as
+the active completion ledger for the model.
+
+The active Stage 2 completion ledger is:
+
+- [address-cml-stage2-checklist.md](/Users/asami/src/dev2026/simplemodeling-model/docs/phase/2026/04/address-cml-stage2-checklist.md)
+
 ## Objective
 
 The `Address` Value Object is stably generated from `address.cml`, and the

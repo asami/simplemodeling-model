@@ -8,12 +8,13 @@ lazy val root = project
   .settings(
     organization := "org.simplemodeling",
     name := "simplemodeling-model",
-    version := "0.1.1",
+    version := "0.1.2-SNAPSHOT",
 
     scalaVersion := scala3Version,
 
     cozyGeneratorBackend := "cozy",
-    cozyDelegateProjectDir := sys.env.get("COZY_PROJECT_DIR").map(file).orElse(Some(file("/Users/asami/src/dev2025/cozy"))),
+    cozyDelegateProjectDir := None,
+    cozyDelegateCommand := Seq("/Users/asami/src/dev2026/cncf-samples/bin/cozy"),
 
     resolvers ++= Seq(
       Resolver.defaultLocal,
@@ -32,7 +33,7 @@ lazy val root = project
       "io.circe" %% "circe-generic" % "0.14.6",
       "io.circe" %% "circe-parser"  % "0.14.6",
 
-      "org.goldenport" %% "goldenport-core" % "0.3.1",
+      "org.goldenport" %% "goldenport-core" % "0.3.2-SNAPSHOT",
       // Testing
       "org.scalatest" %% "scalatest" % "3.2.18" % Test,
       "org.scalatestplus" %% "scalacheck-1-17" % "3.2.18.0" % Test,

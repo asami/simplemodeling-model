@@ -5,12 +5,23 @@ This document defines the Address value-object family as a literate model.
 It preserves executable structure, machine-consumable metadata, and human
 explanation in one source.
 
-The model is organized around a root value object, `Address`, and related
-reusable value objects referenced from its attributes.
+The canonical model is `Address`.
+It is the maintained internal model for postal-address semantics in this
+project.
+
+The model is organized around a root value object, `Address`, and reusable
+value objects referenced from its attributes.
+Types required for Japanese operation remain part of the maintained core even
+when the corresponding attributes are optional in individual `Address`
+instances.
 
 Important help-oriented text is kept in reserved descriptive sections under
 `# VALUE`. Longer rationale, examples, and integration guidance are written as
 narrative before and after structural definitions.
+
+External standards such as `schema.org PostalAddress` and `vCard ADR` are
+treated as important projection and interchange targets, not as the primary
+definition of the model.
 
 The design follows these principles:
 
@@ -20,15 +31,15 @@ The design follows these principles:
 - support for multilingual and country-specific interpretation
 
 Address is the root value object for a portable postal-address model.
-It composes smaller reusable value objects while keeping formatting and
-country-specific rules outside the core structural definition.
+It composes smaller reusable value objects while keeping country-specific
+formatting and delivery validation outside the core structural definition.
 
 The model is designed to preserve address semantics first and rendering rules
 second.
 
 `addressCountry` drives country-specific interpretation.
-Formatting and country-dependent rule checks are out of scope of this core
-value object.
+Formatting, projection-specific recovery, and country-dependent delivery rule
+checks are downstream concerns rather than core model guarantees.
 
 # VALUE
 
@@ -98,6 +109,7 @@ Postal or ZIP code value.
 - name: value
   type: String
   multiplicity: "1"
+  min: 1
 
 ### DESCRIPTION
 
@@ -114,6 +126,7 @@ Top-level administrative division.
 - name: value
   type: String
   multiplicity: "1"
+  min: 1
 
 ### DESCRIPTION
 
@@ -130,6 +143,7 @@ City or equivalent locality.
 - name: value
   type: String
   multiplicity: "1"
+  min: 1
 
 ### DESCRIPTION
 
@@ -146,6 +160,7 @@ Subdivision within a locality.
 - name: value
   type: String
   multiplicity: "1"
+  min: 1
 
 ### DESCRIPTION
 
@@ -162,6 +177,7 @@ Primary street-level address value.
 - name: value
   type: String
   multiplicity: "1"
+  min: 1
 
 ### DESCRIPTION
 
@@ -178,6 +194,7 @@ Additional address-detail value.
 - name: value
   type: String
   multiplicity: "1"
+  min: 1
 
 ### DESCRIPTION
 
@@ -201,7 +218,14 @@ extendedAddress: "Building A 101"
 
 ## International Standards
 
-This model uses standards as interoperability anchors:
+This model uses external standards as interoperability anchors, but it does
+not reduce the Address family to any single external representation.
+
+The canonical model is `Address`.
+External standards are treated as important projection and interchange
+targets.
+
+The main anchors are:
 
 - ISO 3166-1 (country codes)
 - schema.org PostalAddress (web structured data)
@@ -210,7 +234,12 @@ This model uses standards as interoperability anchors:
 
 ## schema.org
 
-PostalAddress is treated as the canonical web-facing mapping model.
+`schema.org PostalAddress` is the primary web-facing projection target.
+
+It is important for search-facing JSON-LD and general web interoperability,
+but it does not define the full internal model.
+Fields such as `addressSubLocality` and `extendedAddress` may require
+projection policy beyond direct standard slots.
 
 
 ## vCard
@@ -219,18 +248,31 @@ vCard ADR positional form:
 
 ADR: POBOX;EXT;STREET;LOCALITY;REGION;POSTALCODE;COUNTRY
 
-The model is designed for reversible mapping where possible.
+`vCard ADR` is the primary contact/interchange projection target.
+
+It provides a strong positional mapping for the core address fields and a
+useful slot for `extendedAddress` via `EXT`.
+It does not provide a stable dedicated slot for `addressSubLocality`, so
+complete reversibility still depends on integration policy.
 
 
 ## ISO
 
-Country identity is based on ISO 3166-1 alpha-2.
+Country identity is anchored by ISO 3166-1 alpha-2.
+
+This standard is treated as part of the core validation contract for
+`CountryCode`, not merely as descriptive background.
 
 
 # Internationalization
 
 Address structure differs by country.
 Country-specific interpretation is delegated using `addressCountry`.
+
+The generic internationalization context should not know `Address` directly.
+Address-specific handling is expected to obtain an Address-specific class
+context from the generic i18n context and resolve country-specific
+interpretation through that class context.
 
 ## Japan
 
@@ -248,6 +290,14 @@ Country-specific interpretation is delegated using `addressCountry`.
 
 # Mapping
 
+`Address` is the canonical internal model.
+`schema.org PostalAddress` and `vCard ADR` are treated as projection targets,
+not as the primary model definition.
+
+Directly corresponding fields are mapped one-to-one where possible.
+Fields without a stable standard slot are mapped by integration policy, and
+some projections may be only partially reversible.
+
 ## schema.org
 
 - addressCountry -> addressCountry
@@ -256,7 +306,27 @@ Country-specific interpretation is delegated using `addressCountry`.
 - addressLocality -> addressLocality
 - streetAddress -> streetAddress
 
-`addressSubLocality` and `extendedAddress` are mapped by integration policy.
+`addressSubLocality` does not have a stable standard slot in
+`schema.org PostalAddress`.
+It is therefore preserved in the canonical model and projected by integration
+policy, typically by supplemental application metadata or by controlled
+absorption into `streetAddress`.
+
+`extendedAddress` also does not have a stable dedicated standard slot in
+`schema.org PostalAddress`.
+It is therefore projected by integration policy, typically by supplemental
+metadata or by controlled absorption into `streetAddress`.
+
+Round-trip implications:
+
+- `Address -> schema.org` may lose the independent distinction of
+  `addressSubLocality`
+- `Address -> schema.org` may lose the independent distinction of
+  `extendedAddress`
+- `schema.org -> Address` cannot usually reconstruct `addressSubLocality`
+  unless an integration-specific extension is used
+- `schema.org -> Address` cannot usually reconstruct `extendedAddress`
+  unless an integration-specific extension is used
 
 ## vCard
 
@@ -267,11 +337,57 @@ Country-specific interpretation is delegated using `addressCountry`.
 - postalCode -> POSTALCODE
 - addressCountry -> COUNTRY
 
+`addressSubLocality` does not have a stable dedicated slot in standard
+`vCard ADR`.
+It is therefore preserved in the canonical model and projected by integration
+policy, typically by controlled absorption into `STREET`.
+
+Round-trip implications:
+
+- `Address -> vCard` can project `extendedAddress` directly to `EXT`
+- `Address -> vCard` usually projects `addressSubLocality` by policy rather
+  than by one fixed standard slot
+- `vCard -> Address` can usually reconstruct `extendedAddress` from `EXT`
+- `vCard -> Address` cannot usually reconstruct `addressSubLocality`
+  independently unless an integration-specific rule is applied
+
 
 # Validation
 
-Country-specific validation is intentionally outside the core Address value
-model.
+Validation is split between the core Address model and downstream policy.
 
-- structural validation in this model covers type shape and shared constraints
-- country-specific postal rules are delegated to downstream validation policy
+The core model is responsible for:
+
+- structural shape
+- multiplicity
+- shared reusable constraints
+- stable cross-country semantics for the maintained fields
+
+The downstream integration layer is responsible for:
+
+- country-specific postal-code rules
+- country-specific formatting rules
+- country-specific completeness rules
+- application-specific projection and recovery rules during interchange
+
+Those downstream rules are expected to be resolved through an
+Address-specific class internationalization context derived from a generic
+i18n context, rather than by making the generic i18n context itself aware of
+`Address`.
+
+Current core validation contract:
+
+- `addressCountry` is required
+- `streetAddress` is required
+- `CountryCode` is constrained to ISO 3166-1 alpha-2 style uppercase
+  two-letter codes
+- other maintained fields may be optional even when they are part of the
+  maintained core model
+
+This means `SubLocality` and `ExtendedAddress` remain part of the maintained
+Address family even though `Address` may omit them in individual instances.
+
+The model intentionally does not claim that a postal address is valid for
+delivery in a specific country.
+That judgment belongs to downstream validation policy driven by
+`addressCountry`.

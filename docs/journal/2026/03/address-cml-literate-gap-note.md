@@ -4,6 +4,17 @@ updated_at=2026-03-24
 status=completed
 target=src/main/cozy/address.cml
 
+## Stage status
+
+This note records the Stage 1 gap analysis and its baseline closure.
+
+It should be read as the gap note for the first executable baseline, not as
+the final statement that `address.cml` is complete in every respect.
+
+The active Stage 2 completion ledger is:
+
+- [address-cml-stage2-checklist.md](/Users/asami/src/dev2026/simplemodeling-model/docs/phase/2026/04/address-cml-stage2-checklist.md)
+
 ## Goal
 
 With `address.cml`, make the following three layers coexist in a single document for the `Address` Value Object and related concepts.

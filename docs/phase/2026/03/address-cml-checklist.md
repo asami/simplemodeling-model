@@ -4,6 +4,29 @@ updated_at=2026-03-25
 status=completed
 scope=address.cml -> Cozy -> simplemodeling-model -> CNCF
 
+## Stage status
+
+This file is the Stage 1 checklist for `address.cml`.
+
+Stage 1 means:
+
+- the baseline fixture was established
+- the first executable Cozy path was established
+- the first executable `simplemodeling-model` integration was established
+- the first executable CNCF smoke integration was established
+
+This file should no longer be read as the final completion ledger for
+`address.cml`.
+
+The active completion ledger is now:
+
+- [address-cml-stage2-checklist.md](/Users/asami/src/dev2026/simplemodeling-model/docs/phase/2026/04/address-cml-stage2-checklist.md)
+
+Operationally:
+
+- 2026/03 = Stage 1 baseline milestone
+- 2026/04 = Stage 2 completion definition and remaining-work ledger
+
 ## Phase objective
 
 Value Object generation from `address.cml` is working, and the `Cozy` and

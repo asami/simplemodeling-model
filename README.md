@@ -34,3 +34,14 @@ sbt cozyGenerate
 - `goldenport-core` 移管対象の優先順位を確定
 - `cml` 生成コマンド（またはスクリプト）をリポジトリ内に固定化
 - generated コードの再生成手順を CI へ組み込む
+
+## address.cml documents
+
+- Stage 1 baseline checklist:
+  [address-cml-checklist.md](/Users/asami/src/dev2026/simplemodeling-model/docs/phase/2026/03/address-cml-checklist.md)
+- Stage 2 active completion ledger:
+  [address-cml-stage2-checklist.md](/Users/asami/src/dev2026/simplemodeling-model/docs/phase/2026/04/address-cml-stage2-checklist.md)
+- Stage 1 roadmap:
+  [address-cml-implementation-roadmap.md](/Users/asami/src/dev2026/simplemodeling-model/docs/journal/2026/03/address-cml-implementation-roadmap.md)
+- Stage 1 literate gap note:
+  [address-cml-literate-gap-note.md](/Users/asami/src/dev2026/simplemodeling-model/docs/journal/2026/03/address-cml-literate-gap-note.md)
