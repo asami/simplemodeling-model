@@ -14,12 +14,13 @@ import org.goldenport.datatype.Name
 import org.goldenport.datatype.ObjectId
 import org.goldenport.datatype.Slug
 import org.simplemodeling.model.statemachine.Aliveness
+import org.simplemodeling.model.statemachine.ActivationStatus
 import org.simplemodeling.model.statemachine.PostStatus
 import org.simplemodeling.model.directive.Update
 
 /*
  * @since   Mar. 23, 2026
- * @version Mar. 29, 2026
+ * @version Apr.  7, 2026
  * @author  ASAMI, Tomoharu
  */
 // NOTE:
@@ -74,6 +75,10 @@ case class SecurityAttributesUpdate(
 )
 
 case class ResourceAttributesUpdate(
+  activatedAt: Update[ZonedDateTime] = Update.noop[ZonedDateTime],
+  deactivatedAt: Update[ZonedDateTime] = Update.noop[ZonedDateTime],
+  expiresAt: Update[ZonedDateTime] = Update.noop[ZonedDateTime],
+  activationStatus: Update[ActivationStatus] = Update.noop[ActivationStatus]
 )
 
 case class AuditAttributesUpdate(
