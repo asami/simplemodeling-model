@@ -13,8 +13,7 @@ lazy val root = project
     scalaVersion := scala3Version,
 
     cozyGeneratorBackend := "cozy",
-    cozyDelegateProjectDir := None,
-    cozyDelegateCommand := Seq("/Users/asami/src/dev2026/cncf-samples/bin/cozy"),
+    cozyDelegateProjectDir := Some(file("/Users/asami/src/dev2025/cozy")),
 
     resolvers ++= Seq(
       Resolver.defaultLocal,

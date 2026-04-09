@@ -41,6 +41,14 @@ second.
 Formatting, projection-specific recovery, and country-dependent delivery rule
 checks are downstream concerns rather than core model guarantees.
 
+# COMPONENT
+
+## SimpleModelingModel
+
+### PACKAGE
+
+org.simplemodeling.model
+
 # VALUE
 
 ## Address
