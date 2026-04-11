@@ -10,31 +10,31 @@ import org.scalatest.matchers.should.Matchers
  */
 class GeneratedAddressReferenceSpec extends AnyFlatSpec with Matchers {
   private def generatedAddressAvailable: Boolean =
-    scala.util.Try(Class.forName("domain.value.Address$")).isSuccess &&
-      scala.util.Try(Class.forName("domain.value.CountryCode$")).isSuccess
+    scala.util.Try(Class.forName("org.simplemodeling.model.value.Address$")).isSuccess &&
+      scala.util.Try(Class.forName("org.simplemodeling.model.value.CountryCode$")).isSuccess
 
   private def _new_typed_value(name: String, value: String): AnyRef = {
-    val module = Class.forName(s"domain.value.${name}$$").getField("MODULE$").get(null)
+    val module = Class.forName(s"org.simplemodeling.model.value.${name}$$").getField("MODULE$").get(null)
     module.getClass.getMethod("apply", classOf[String]).invoke(module, value).asInstanceOf[AnyRef]
   }
 
   "generated address value objects" should "be referenceable from handwritten code" in {
     if (!generatedAddressAvailable) cancel("generated address model is not available")
 
-    val countryModule = Class.forName("domain.value.CountryCode$").getField("MODULE$").get(null)
+    val countryModule = Class.forName("org.simplemodeling.model.value.CountryCode$").getField("MODULE$").get(null)
     val country = countryModule.getClass.getMethod("apply", classOf[String]).invoke(countryModule, "JP")
     val countryValue = country.getClass.getMethod("value").invoke(country)
 
-    val addressModule = Class.forName("domain.value.Address$").getField("MODULE$").get(null)
+    val addressModule = Class.forName("org.simplemodeling.model.value.Address$").getField("MODULE$").get(null)
     val address = addressModule.getClass.getMethod(
       "apply",
-      Class.forName("domain.value.CountryCode"),
-      Class.forName("domain.value.PostalCode"),
-      Class.forName("domain.value.Region"),
-      Class.forName("domain.value.Locality"),
-      Class.forName("domain.value.SubLocality"),
-      Class.forName("domain.value.StreetAddress"),
-      Class.forName("domain.value.ExtendedAddress")
+      Class.forName("org.simplemodeling.model.value.CountryCode"),
+      Class.forName("org.simplemodeling.model.value.PostalCode"),
+      Class.forName("org.simplemodeling.model.value.Region"),
+      Class.forName("org.simplemodeling.model.value.Locality"),
+      Class.forName("org.simplemodeling.model.value.SubLocality"),
+      Class.forName("org.simplemodeling.model.value.StreetAddress"),
+      Class.forName("org.simplemodeling.model.value.ExtendedAddress")
     ).invoke(
       addressModule,
       _new_typed_value("CountryCode", "JP"),

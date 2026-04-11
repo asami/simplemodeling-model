@@ -10,18 +10,18 @@ import org.scalatest.matchers.should.Matchers
  */
 class GeneratedAddressBuilderSpec extends AnyFlatSpec with Matchers {
   private def generatedAddressAvailable: Boolean =
-    scala.util.Try(Class.forName("domain.value.Address$")).isSuccess &&
-      scala.util.Try(Class.forName("domain.value.CountryCode$")).isSuccess
+    scala.util.Try(Class.forName("org.simplemodeling.model.value.Address$")).isSuccess &&
+      scala.util.Try(Class.forName("org.simplemodeling.model.value.CountryCode$")).isSuccess
 
   private def _new_typed_value(name: String, value: String): AnyRef = {
-    val module = Class.forName(s"domain.value.${name}$$").getField("MODULE$").get(null)
+    val module = Class.forName(s"org.simplemodeling.model.value.${name}$$").getField("MODULE$").get(null)
     module.getClass.getMethod("apply", classOf[String]).invoke(module, value).asInstanceOf[AnyRef]
   }
 
   "generated CountryCode builder" should "validate the pattern at value creation time" in {
     if (!generatedAddressAvailable) cancel("generated address model is not available")
 
-    val module = Class.forName("domain.value.CountryCode$").getField("MODULE$").get(null)
+    val module = Class.forName("org.simplemodeling.model.value.CountryCode$").getField("MODULE$").get(null)
     val apply = module.getClass.getMethod("apply", classOf[String])
     val result = intercept[java.lang.reflect.InvocationTargetException] {
       apply.invoke(module, "jp")
@@ -34,9 +34,9 @@ class GeneratedAddressBuilderSpec extends AnyFlatSpec with Matchers {
   "generated Address builder" should "validate required fields at build time" in {
     if (!generatedAddressAvailable) cancel("generated address model is not available")
 
-    val builderClass = Class.forName("domain.value.Address$Builder")
-    val countryCodeClass = Class.forName("domain.value.CountryCode")
-    val postalCodeClass = Class.forName("domain.value.PostalCode")
+    val builderClass = Class.forName("org.simplemodeling.model.value.Address$Builder")
+    val countryCodeClass = Class.forName("org.simplemodeling.model.value.CountryCode")
+    val postalCodeClass = Class.forName("org.simplemodeling.model.value.PostalCode")
     val builder = builderClass
       .getDeclaredConstructor(
         Class.forName("scala.Option"),
