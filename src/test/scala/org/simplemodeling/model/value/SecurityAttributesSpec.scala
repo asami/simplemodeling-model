@@ -1,5 +1,6 @@
 package org.simplemodeling.model.value
 
+import org.goldenport.record.Record
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
@@ -13,12 +14,44 @@ class SecurityAttributesSpec extends AnyWordSpec
   with ScalaCheckDrivenPropertyChecks
   with Matchers {
 
-  "SecurityAttributes" should {  "satisfy basic properties" in {
-    pending
-  }
+  "SecurityAttributes" should {
+    "read expanded securityAttributes rights" in {
+      val record = Record.dataAuto(
+        "securityAttributes" -> SecurityAttributes.publicOwnedBy("alice").toRecord
+      )
 
-  "preserve invariants" in {
-    pending
-  }
+      val attributes = SecurityAttributes.fromRecord(record).get
+
+      attributes.ownerId.id.value shouldBe "alice"
+      attributes.permissionFor("owner", "update") shouldBe true
+      attributes.permissionFor("other", "read") shouldBe true
+      attributes.permissionFor("other", "update") shouldBe false
+      attributes.permissionFor("owner", "execute") shouldBe false
+      attributes.permissionFor("other", "execute") shouldBe false
+    }
+
+    "create private owner permissions" in {
+      val attributes = SecurityAttributes.privateOwnedBy("alice")
+
+      attributes.permissionFor("owner", "read") shouldBe true
+      attributes.permissionFor("owner", "write") shouldBe true
+      attributes.permissionFor("owner", "execute") shouldBe false
+      attributes.permissionFor("group", "read") shouldBe false
+      attributes.permissionFor("other", "read") shouldBe false
+    }
+
+    "read compact permission text" in {
+      val record = Record.dataAuto(
+        "owner_id" -> "alice",
+        "permission" -> "owner=rwx,group=r,other=r"
+      )
+
+      val attributes = SecurityAttributes.fromRecord(record).get
+
+      attributes.ownerId.id.value shouldBe "alice"
+      attributes.permissionFor("owner", "delete") shouldBe true
+      attributes.permissionFor("group", "read") shouldBe true
+      attributes.permissionFor("group", "update") shouldBe false
+    }
   }
 }

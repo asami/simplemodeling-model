@@ -5,7 +5,7 @@ import org.scalatest.matchers.should.Matchers
 
 /*
  * @since   Mar. 25, 2026
- * @version Apr.  3, 2026
+ * @version Apr. 13, 2026
  * @author  ASAMI, Tomoharu
  */
 class GeneratedAddressBuilderSpec extends AnyFlatSpec with Matchers {
