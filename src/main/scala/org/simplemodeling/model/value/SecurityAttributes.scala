@@ -10,7 +10,6 @@ import org.goldenport.record.Record
  *  version Aug.  2, 2025
  *  version Mar. 29, 2026
  * @version Apr. 13, 2026
- *  version Aug.  2, 2025
  * @author  ASAMI, Tomoharu
  */
 case class SecurityAttributes(
@@ -151,7 +150,7 @@ object SecurityAttributes {
     subjectId: String,
     matchesGroup: String => Boolean
   ): Option[String] =
-    if (attributes.ownerId.id.value == subjectId)
+    if (_normalize(attributes.ownerId.id.value) == _normalize(subjectId))
       Some("owner")
     else if (matchesGroup(attributes.groupId.id.value))
       Some("group")
