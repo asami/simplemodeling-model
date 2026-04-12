@@ -1,5 +1,7 @@
 package org.simplemodeling.model.value
 
+import org.goldenport.Consequence
+import org.goldenport.convert.ValueReader
 import org.goldenport.datatype.ObjectId
 import org.goldenport.datatype.Identifier
 import org.goldenport.datatype.PathName
@@ -31,6 +33,14 @@ case class SecurityAttributes(
 }
 
 object SecurityAttributes {
+  given ValueReader[SecurityAttributes] with
+    def readC(v: Any): Consequence[SecurityAttributes] = v match
+      case m: SecurityAttributes => Consequence.success(m)
+      case m: Record =>
+        Consequence.successOrPropertyNotFound("securityAttributes", fromRecord(m))
+      case _ =>
+        Consequence.failValueInvalid(v, org.goldenport.schema.XString)
+
   case class Rights(
     owner: Rights.Permissions,
     group: Rights.Permissions,
