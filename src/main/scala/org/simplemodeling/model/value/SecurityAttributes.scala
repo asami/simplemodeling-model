@@ -203,6 +203,7 @@ object SecurityAttributes {
     role: String
   ): Rights.Permissions =
     _permission_record(security, role)
+      .orElse(_permission_record(Some(record), role))
       .orElse(_permission_record(Some(record), role, Vector("securityAttributes", "rights")))
       .orElse(_permission_record(Some(record), role, Vector("security_attributes", "rights")))
       .map(Rights.Permissions.fromRecord)
