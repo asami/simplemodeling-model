@@ -3,6 +3,7 @@ package org.simplemodeling.model
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import org.goldenport.datatype.Identifier
+import org.goldenport.datatype.I18nText
 import org.goldenport.datatype.Name
 import org.goldenport.datatype.ObjectId
 import org.simplemodeling.model.value.AuditAttributes
@@ -29,8 +30,20 @@ abstract class SimpleObjectCreate {
   def nameAttributes: NameAttributes =
     NameAttributes.simple(Name("unknown"))
 
+  def title: String =
+    nameAttributes.title.map(_.displayMessage(java.util.Locale.ROOT)).getOrElse(nameAttributes.name.toString)
+
+  def title(locale: java.util.Locale): String =
+    nameAttributes.title.map(_.displayMessage(locale)).getOrElse(nameAttributes.name.toString)
+
   def descriptiveAttributes: DescriptiveAttributes =
     DescriptiveAttributes.empty
+
+  def content: Option[I18nText] =
+    descriptiveAttributes.content
+
+  def content(locale: java.util.Locale): Option[String] =
+    content.map(_.displayMessage(locale))
 
   def lifecycleAttributes: LifecycleAttributes =
     LifecycleAttributes(
