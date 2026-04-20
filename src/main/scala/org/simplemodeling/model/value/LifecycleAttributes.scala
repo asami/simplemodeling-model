@@ -14,7 +14,7 @@ import org.simplemodeling.model.statemachine.Aliveness
  *  version Aug.  4, 2025
  *  version Feb. 19, 2026
  *  version Mar. 29, 2026
- * @version Apr. 13, 2026
+ * @version Apr. 20, 2026
  * @author  ASAMI, Tomoharu
  */
 case class LifecycleAttributes(
@@ -72,7 +72,31 @@ object LifecycleAttributes {
     }.toVector.headOption.getOrElse(Consequence.success(None))
 
   private def _get_identifier(record: Record, keys: String*): Consequence[Option[Identifier]] =
-    _get_as[Identifier](record, keys)
+    keys.foldLeft(Consequence.success(Option.empty[Identifier])) { (z, key) =>
+      z.flatMap {
+        case s @ Some(_) => Consequence.success(s)
+        case None =>
+          record.getAny(key) match {
+            case Some(m: Identifier) => Consequence.success(Some(m))
+            case Some(m: String) if m.trim.isEmpty => Consequence.success(None)
+            case Some(m: String) => Consequence.success(Some(Identifier(_identifier_text(m))))
+            case Some(m) => summon[ValueReader[Identifier]].readC(m).map(Some(_))
+            case None => Consequence.success(None)
+          }
+      }
+    }
+
+  private def _identifier_text(text: String): String = {
+    val sanitized = text.trim.map {
+      case c if c.isLetterOrDigit || c == '_' => c
+      case _ => '_'
+    }.mkString
+    val nonempty = if (sanitized.isEmpty) "unknown" else sanitized
+    if (nonempty.headOption.exists(_.isLetter))
+      nonempty
+    else
+      s"id_$nonempty"
+  }
 
   private def _get_post_status(record: Record, keys: String*): Consequence[Option[PostStatus]] =
     _get_as[PostStatus](record, keys)

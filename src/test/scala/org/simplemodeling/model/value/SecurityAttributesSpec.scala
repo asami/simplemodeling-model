@@ -7,7 +7,8 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 /*
  * @since   Dec. 22, 2025
- * @version Mar. 29, 2026
+ *  version Mar. 29, 2026
+ * @version Apr. 20, 2026
  * @author  ASAMI, Tomoharu
  */
 class SecurityAttributesSpec extends AnyWordSpec
@@ -52,6 +53,21 @@ class SecurityAttributesSpec extends AnyWordSpec
       attributes.permissionFor("owner", "delete") shouldBe true
       attributes.permissionFor("group", "read") shouldBe true
       attributes.permissionFor("group", "update") shouldBe false
+    }
+
+    "read JSON rights text from storage records" in {
+      val record = Record.dataAuto(
+        "owner_id" -> "alice",
+        "rights" -> "{\"owner\":{\"read\":true,\"write\":true,\"execute\":true},\"group\":{\"read\":true,\"write\":false,\"execute\":false},\"other\":{\"read\":true,\"write\":false,\"execute\":false}}"
+      )
+
+      val attributes = SecurityAttributes.fromRecord(record).get
+
+      attributes.ownerId.id.value shouldBe "alice"
+      attributes.permissionFor("owner", "execute") shouldBe true
+      attributes.permissionFor("group", "read") shouldBe true
+      attributes.permissionFor("group", "update") shouldBe false
+      attributes.permissionFor("other", "read") shouldBe true
     }
   }
 }

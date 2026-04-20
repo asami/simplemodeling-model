@@ -1,5 +1,6 @@
 package org.simplemodeling.model.value
 
+import io.circe.parser.parse
 import org.goldenport.Consequence
 import org.goldenport.convert.ValueReader
 import org.goldenport.datatype.ObjectId
@@ -11,7 +12,7 @@ import org.goldenport.record.Record
  * @since   Aug.  1, 2025
  *  version Aug.  2, 2025
  *  version Mar. 29, 2026
- * @version Apr. 13, 2026
+ * @version Apr. 20, 2026
  * @author  ASAMI, Tomoharu
  */
 case class SecurityAttributes(
@@ -206,6 +207,7 @@ object SecurityAttributes {
       .orElse(_permission_record(Some(record), role))
       .orElse(_permission_record(Some(record), role, Vector("securityAttributes", "rights")))
       .orElse(_permission_record(Some(record), role, Vector("security_attributes", "rights")))
+      .orElse(_permission_record_from_text(record, role, "rights"))
       .map(Rights.Permissions.fromRecord)
       .orElse(_permission_text(record, role).map(Rights.Permissions.parse))
       .getOrElse(Rights.Permissions.none)
@@ -225,6 +227,30 @@ object SecurityAttributes {
       case Nil => Some(record)
       case key :: Nil => record.getRecord(key)
       case key :: rest => record.getRecord(key).flatMap(_get_record(_, rest.toVector))
+
+  private def _permission_record_from_text(
+    record: Record,
+    role: String,
+    names: String*
+  ): Option[Record] =
+    names.iterator.flatMap(record.getString).flatMap(_json_permission_record(_, role)).toVector.headOption
+
+  private def _json_permission_record(
+    text: String,
+    role: String
+  ): Option[Record] =
+    parse(text).toOption.flatMap { json =>
+      val cursor = json.hcursor.downField(role)
+      for {
+        read <- cursor.get[Boolean]("read").toOption
+        write <- cursor.get[Boolean]("write").toOption
+        execute <- cursor.get[Boolean]("execute").toOption
+      } yield Record.dataAuto(
+        "read" -> read,
+        "write" -> write,
+        "execute" -> execute
+      )
+    }
 
   private def _permission_text(
     record: Record,
