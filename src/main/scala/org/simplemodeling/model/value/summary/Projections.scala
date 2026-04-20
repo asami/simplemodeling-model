@@ -17,8 +17,7 @@ import org.simplemodeling.model.value.*
 
 /*
  * @since   Apr.  2, 2026
- *  version Apr.  2, 2026
- * @version Apr.  3, 2026
+ * @version Apr. 20, 2026
  * @author  ASAMI, Tomoharu
  */
 type NameAttributes = org.simplemodeling.model.value.NameAttributes
@@ -43,8 +42,7 @@ object NameAttributes {
     title: Option[I18nTitle],
     code: Option[Identifier],
     alias: Option[cats.data.NonEmptyVector[I18nLabel]],
-    slug: Option[Slug],
-    shortid: Option[Identifier]
+    slug: Option[Slug]
   ): org.simplemodeling.model.value.NameAttributes =
     org.goldenport.value.NameAttributes(
       name = name,
@@ -52,12 +50,11 @@ object NameAttributes {
       title = title,
       code = code,
       alias = None,
-      slug = slug,
-      shortid = shortid
+      slug = slug
     )
 
   def apply(p: org.simplemodeling.model.value.NameAttributes): org.simplemodeling.model.value.NameAttributes =
-    apply(p.name, p.label, p.title, p.code, p.alias, p.slug, p.shortid)
+    apply(p.name, p.label, p.title, p.code, p.alias, p.slug)
 }
 
 type DescriptiveAttributes = org.simplemodeling.model.value.DescriptiveAttributes

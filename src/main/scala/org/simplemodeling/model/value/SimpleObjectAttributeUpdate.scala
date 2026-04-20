@@ -20,7 +20,7 @@ import org.simplemodeling.model.directive.Update
 
 /*
  * @since   Mar. 23, 2026
- * @version Apr.  7, 2026
+ * @version Apr. 20, 2026
  * @author  ASAMI, Tomoharu
  */
 // NOTE:
@@ -34,8 +34,7 @@ case class NameAttributesUpdate(
   title: Update[I18nTitle] = Update.noop[I18nTitle],
   code: Update[Identifier] = Update.noop[Identifier],
   alias: Update[NonEmptyVector[I18nLabel]] = Update.noop[NonEmptyVector[I18nLabel]],
-  slug: Update[Slug] = Update.noop[Slug],
-  shortid: Update[Identifier] = Update.noop[Identifier]
+  slug: Update[Slug] = Update.noop[Slug]
 )
 
 case class DescriptiveAttributesUpdate(

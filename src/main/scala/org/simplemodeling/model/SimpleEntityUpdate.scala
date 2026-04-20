@@ -1,13 +1,16 @@
 package org.simplemodeling.model
 
+import org.goldenport.datatype.Identifier
 import org.simplemodeling.model.datatype.EntityId
 import org.simplemodeling.model.directive.Update
 
 /*
  * @since   Mar. 23, 2026
- * @version Mar. 29, 2026
+ *  version Mar. 29, 2026
+ * @version Apr. 20, 2026
  * @author  ASAMI, Tomoharu
  */
 abstract class SimpleEntityUpdate extends SimpleObjectUpdate {
   def id: Update[EntityId] = Update.noop[EntityId]
+  def shortid: Update[Identifier] = Update.noop[Identifier]
 }

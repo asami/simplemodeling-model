@@ -11,8 +11,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 /*
  * @since   Dec. 22, 2025
- * @version Apr.  2, 2026
- *  version Apr.  2, 2026
+ * @version Apr. 20, 2026
  * @author  ASAMI, Tomoharu
  */
 class NameAttributesSpec extends AnyWordSpec
@@ -27,8 +26,7 @@ class NameAttributesSpec extends AnyWordSpec
         title = Some(I18nTitle("Reader")),
         code = Some(Identifier("alicecode")),
         alias = None,
-        slug = Some(Slug.create("alice").TAKE),
-        shortid = Some(Identifier("A1"))
+        slug = Some(Slug.create("alice").TAKE)
       )
 
       val projected = org.simplemodeling.model.value.summary.NameAttributes(src)
@@ -45,15 +43,13 @@ class NameAttributesSpec extends AnyWordSpec
         title = Some(I18nTitle("Reader")),
         code = Some(Identifier("alicecode")),
         alias = None,
-        slug = Some(Slug.create("alice").TAKE),
-        shortid = Some(Identifier("A1"))
+        slug = Some(Slug.create("alice").TAKE)
       )
 
       val projected = org.simplemodeling.model.value.detail.NameAttributes(src)
 
       projected.code.map(_.value) shouldBe Some("alicecode")
       projected.slug.map(_.value) shouldBe Some("alice")
-      projected.shortid.map(_.value) shouldBe Some("A1")
     }
   }
 }

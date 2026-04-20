@@ -20,7 +20,7 @@ import org.simplemodeling.model.directive.Condition
 
 /*
  * @since   Mar. 23, 2026
- * @version Apr.  7, 2026
+ * @version Apr. 20, 2026
  * @author  ASAMI, Tomoharu
  */
 // NOTE:
@@ -33,8 +33,7 @@ case class NameAttributesQuery(
   title: Condition[I18nTitle] = Condition.any[I18nTitle],
   code: Condition[Identifier] = Condition.any[Identifier],
   alias: Condition[NonEmptyVector[I18nLabel]] = Condition.any[NonEmptyVector[I18nLabel]],
-  slug: Condition[Slug] = Condition.any[Slug],
-  shortid: Condition[Identifier] = Condition.any[Identifier]
+  slug: Condition[Slug] = Condition.any[Slug]
 )
 
 case class DescriptiveAttributesQuery(
