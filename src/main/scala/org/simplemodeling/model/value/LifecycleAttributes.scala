@@ -1,6 +1,6 @@
 package org.simplemodeling.model.value
 
-import java.time.ZonedDateTime
+import java.time.Instant
 import scala.util.Try
 import org.goldenport.Consequence
 import org.goldenport.convert.ValueReader
@@ -14,14 +14,14 @@ import org.simplemodeling.model.statemachine.Aliveness
  *  version Aug.  4, 2025
  *  version Feb. 19, 2026
  *  version Mar. 29, 2026
- * @version Apr. 20, 2026
+ * @version Apr. 25, 2026
  * @author  ASAMI, Tomoharu
  */
 case class LifecycleAttributes(
-  createdAt: ZonedDateTime,
-  updatedAt: Option[ZonedDateTime],
+  createdAt: Instant,
+  updatedAt: Instant,
   createdBy: Identifier,
-  updatedBy: Option[Identifier],
+  updatedBy: Identifier,
   postStatus: PostStatus,
   aliveness: Aliveness
 )
@@ -32,25 +32,27 @@ object LifecycleAttributes {
       case m: LifecycleAttributes => Consequence.success(m)
       case m: Record =>
         for {
-          createdat <- _get_zoned_date_time(m, "createdAt", "created_at")
-          updatedat <- _get_zoned_date_time(m, "updatedAt", "updated_at")
+          createdat <- _get_instant(m, "createdAt", "created_at")
+          updatedat <- _get_instant(m, "updatedAt", "updated_at")
           createdby <- _get_identifier(m, "createdBy", "created_by")
           updatedby <- _get_identifier(m, "updatedBy", "updated_by")
           poststatus <- _get_post_status(m, "postStatus", "post_status")
           aliveness <- _get_aliveness(m, "aliveness")
+          effectivecreatedat = createdat.getOrElse(LifecycleAttributes.defaultCreatedAt)
+          effectivecreatedby = createdby.getOrElse(Identifier("system"))
         } yield LifecycleAttributes(
-          createdAt = createdat.getOrElse(LifecycleAttributes.defaultCreatedAt),
-          updatedAt = updatedat,
-          createdBy = createdby.getOrElse(Identifier("system")),
-          updatedBy = updatedby,
+          createdAt = effectivecreatedat,
+          updatedAt = updatedat.getOrElse(effectivecreatedat),
+          createdBy = effectivecreatedby,
+          updatedBy = updatedby.getOrElse(effectivecreatedby),
           postStatus = poststatus.getOrElse(PostStatus.default),
           aliveness = aliveness.getOrElse(Aliveness.default)
         )
       case _ =>
         Consequence.failValueInvalid(v, org.goldenport.schema.XString)
 
-  val defaultCreatedAt: ZonedDateTime =
-    ZonedDateTime.parse("1970-01-01T00:00:00Z")
+  val defaultCreatedAt: Instant =
+    Instant.EPOCH
 
   trait Holder {
     def lifecycleAttributes: LifecycleAttributes
@@ -58,14 +60,12 @@ object LifecycleAttributes {
     protected def lifecycle_Attributes: LifecycleAttributes = lifecycleAttributes
   }
 
-  private def _get_zoned_date_time(record: Record, keys: String*): Consequence[Option[ZonedDateTime]] =
+  private def _get_instant(record: Record, keys: String*): Consequence[Option[Instant]] =
     keys.iterator.flatMap(record.getAny).map {
-      case m: ZonedDateTime => Consequence.success(Some(m))
-      case m: java.time.OffsetDateTime => Consequence.success(Some(m.toZonedDateTime))
-      case m: java.time.Instant => Consequence.success(Some(ZonedDateTime.ofInstant(m, java.time.ZoneOffset.UTC)))
+      case m: Instant => Consequence.success(Some(m))
       case m: String if m.trim.isEmpty => Consequence.success(None)
       case m: String =>
-        Try(ZonedDateTime.parse(m.trim)).toOption match
+        Try(Instant.parse(m.trim)).toOption match
           case Some(z) => Consequence.success(Some(z))
           case None => Consequence.failValueInvalid(m, org.goldenport.schema.XString)
       case m => Consequence.failValueInvalid(m, org.goldenport.schema.XString)

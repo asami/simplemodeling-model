@@ -1,6 +1,7 @@
 package org.simplemodeling.model.value
 
 import java.net.URL
+import java.time.Instant
 import java.time.ZonedDateTime
 import cats.data.NonEmptyVector
 import org.goldenport.datatype.Identifier
@@ -20,7 +21,7 @@ import org.simplemodeling.model.directive.Update
 
 /*
  * @since   Mar. 23, 2026
- * @version Apr. 20, 2026
+ * @version Apr. 25, 2026
  * @author  ASAMI, Tomoharu
  */
 // NOTE:
@@ -50,8 +51,8 @@ case class DescriptiveAttributesUpdate(
 )
 
 case class LifecycleAttributesUpdate(
-  createdAt: Update[ZonedDateTime] = Update.noop[ZonedDateTime],
-  updatedAt: Update[ZonedDateTime] = Update.noop[ZonedDateTime],
+  createdAt: Update[Instant] = Update.noop[Instant],
+  updatedAt: Update[Instant] = Update.noop[Instant],
   createdBy: Update[Identifier] = Update.noop[Identifier],
   updatedBy: Update[Identifier] = Update.noop[Identifier],
   postStatus: Update[PostStatus] = Update.noop[PostStatus],

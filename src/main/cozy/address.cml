@@ -100,7 +100,7 @@ Two-letter country code.
   multiplicity: "1"
   min: 2
   max: 2
-  pattern: "^[A-Z]{2}$"
+  pattern: "^(A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z){2}$"
 
 ### DESCRIPTION
 

@@ -1,6 +1,7 @@
 package org.simplemodeling.model.value
 
 import java.net.URL
+import java.time.Instant
 import java.time.ZonedDateTime
 import cats.data.NonEmptyVector
 import org.goldenport.datatype.Identifier
@@ -20,7 +21,7 @@ import org.simplemodeling.model.directive.Condition
 
 /*
  * @since   Mar. 23, 2026
- * @version Apr. 20, 2026
+ * @version Apr. 25, 2026
  * @author  ASAMI, Tomoharu
  */
 // NOTE:
@@ -49,8 +50,8 @@ case class DescriptiveAttributesQuery(
 )
 
 case class LifecycleAttributesQuery(
-  createdAt: Condition[ZonedDateTime] = Condition.any[ZonedDateTime],
-  updatedAt: Condition[ZonedDateTime] = Condition.any[ZonedDateTime],
+  createdAt: Condition[Instant] = Condition.any[Instant],
+  updatedAt: Condition[Instant] = Condition.any[Instant],
   createdBy: Condition[Identifier] = Condition.any[Identifier],
   updatedBy: Condition[Identifier] = Condition.any[Identifier],
   postStatus: Condition[PostStatus] = Condition.any[PostStatus],

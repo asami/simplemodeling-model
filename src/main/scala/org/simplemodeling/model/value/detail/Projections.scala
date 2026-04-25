@@ -7,22 +7,24 @@ import org.goldenport.datatype.I18nTitle
 import org.goldenport.datatype.Name
 import org.goldenport.datatype.Slug
 import org.goldenport.convert.ValueReader
+import org.simplemodeling.model.value.internal.ProjectionValueReaders
 import org.simplemodeling.model.value.*
 
 /*
  * @since   Apr.  2, 2026
- * @version Apr. 20, 2026
+ *  version Apr. 20, 2026
+ * @version Apr. 25, 2026
  * @author  ASAMI, Tomoharu
  */
 type NameAttributes = org.simplemodeling.model.value.NameAttributes
 given ValueReader[NameAttributes] =
-  summon[ValueReader[org.simplemodeling.model.value.NameAttributes]].asInstanceOf[ValueReader[NameAttributes]]
+  ProjectionValueReaders.nameAttributes.asInstanceOf[ValueReader[NameAttributes]]
 
 object NameAttributes {
   export org.simplemodeling.model.value.NameAttributes.{Holder, BareHolder, Builder}
 
   def parse(p: Any): Consequence[NameAttributes] =
-    summon[ValueReader[org.simplemodeling.model.value.NameAttributes]].readC(p)
+    ProjectionValueReaders.nameAttributes.readC(p)
 
   def simple(name: String): NameAttributes =
     org.simplemodeling.model.value.NameAttributes.simple(name)
@@ -53,65 +55,65 @@ object NameAttributes {
 
 type DescriptiveAttributes = org.simplemodeling.model.value.DescriptiveAttributes
 given ValueReader[DescriptiveAttributes] =
-  summon[ValueReader[org.simplemodeling.model.value.DescriptiveAttributes]].asInstanceOf[ValueReader[DescriptiveAttributes]]
+  ProjectionValueReaders.descriptiveAttributes.asInstanceOf[ValueReader[DescriptiveAttributes]]
 
 object DescriptiveAttributes {
   export org.simplemodeling.model.value.DescriptiveAttributes.{Holder, BareHolder, Builder, empty}
 
   def parse(p: Any): Consequence[DescriptiveAttributes] =
-    summon[ValueReader[org.simplemodeling.model.value.DescriptiveAttributes]].readC(p)
+    ProjectionValueReaders.descriptiveAttributes.readC(p)
 
   def apply(p: org.simplemodeling.model.value.DescriptiveAttributes): org.simplemodeling.model.value.DescriptiveAttributes = p
 }
 
 type LifecycleAttributes = org.simplemodeling.model.value.LifecycleAttributes
 given ValueReader[LifecycleAttributes] =
-  summon[ValueReader[org.simplemodeling.model.value.LifecycleAttributes]].asInstanceOf[ValueReader[LifecycleAttributes]]
+  ProjectionValueReaders.lifecycleAttributes.asInstanceOf[ValueReader[LifecycleAttributes]]
 
 object LifecycleAttributes {
   export org.simplemodeling.model.value.LifecycleAttributes.Holder
 
   def parse(p: Any): Consequence[LifecycleAttributes] =
-    summon[ValueReader[org.simplemodeling.model.value.LifecycleAttributes]].readC(p)
+    ProjectionValueReaders.lifecycleAttributes.readC(p)
 
   def apply(p: org.simplemodeling.model.value.LifecycleAttributes): org.simplemodeling.model.value.LifecycleAttributes = p
 }
 
 type PublicationAttributes = org.simplemodeling.model.value.PublicationAttributes
 given ValueReader[PublicationAttributes] =
-  summon[ValueReader[org.simplemodeling.model.value.PublicationAttributes]].asInstanceOf[ValueReader[PublicationAttributes]]
+  ProjectionValueReaders.publicationAttributes.asInstanceOf[ValueReader[PublicationAttributes]]
 
 object PublicationAttributes {
   export org.simplemodeling.model.value.PublicationAttributes.Holder
 
   def parse(p: Any): Consequence[PublicationAttributes] =
-    summon[ValueReader[org.simplemodeling.model.value.PublicationAttributes]].readC(p)
+    ProjectionValueReaders.publicationAttributes.readC(p)
 
   def apply(p: org.simplemodeling.model.value.PublicationAttributes): org.simplemodeling.model.value.PublicationAttributes = p
 }
 
 type SecurityAttributes = org.simplemodeling.model.value.SecurityAttributes
 given ValueReader[SecurityAttributes] =
-  summon[ValueReader[org.simplemodeling.model.value.SecurityAttributes]].asInstanceOf[ValueReader[SecurityAttributes]]
+  ProjectionValueReaders.securityAttributes.asInstanceOf[ValueReader[SecurityAttributes]]
 
 object SecurityAttributes {
   export org.simplemodeling.model.value.SecurityAttributes.{Holder, Rights}
 
   def parse(p: Any): Consequence[SecurityAttributes] =
-    summon[ValueReader[org.simplemodeling.model.value.SecurityAttributes]].readC(p)
+    ProjectionValueReaders.securityAttributes.readC(p)
 
   def apply(p: org.simplemodeling.model.value.SecurityAttributes): org.simplemodeling.model.value.SecurityAttributes = p
 }
 
 type ResourceAttributes = org.simplemodeling.model.value.ResourceAttributes
 given ValueReader[ResourceAttributes] =
-  summon[ValueReader[org.simplemodeling.model.value.ResourceAttributes]].asInstanceOf[ValueReader[ResourceAttributes]]
+  ProjectionValueReaders.resourceAttributes.asInstanceOf[ValueReader[ResourceAttributes]]
 
 object ResourceAttributes {
   export org.simplemodeling.model.value.ResourceAttributes.Holder
 
   def parse(p: Any): Consequence[ResourceAttributes] =
-    summon[ValueReader[org.simplemodeling.model.value.ResourceAttributes]].readC(p)
+    ProjectionValueReaders.resourceAttributes.readC(p)
 
   def apply(p: org.simplemodeling.model.value.ResourceAttributes): org.simplemodeling.model.value.ResourceAttributes = p
 }
@@ -121,10 +123,10 @@ type AuditAttributes = org.simplemodeling.model.value.AuditAttributes
 object AuditAttributes {
   export org.simplemodeling.model.value.AuditAttributes.Holder
 
-  given ValueReader[AuditAttributes] = summon[ValueReader[org.simplemodeling.model.value.AuditAttributes]].asInstanceOf[ValueReader[AuditAttributes]]
+  given ValueReader[AuditAttributes] = ProjectionValueReaders.auditAttributes.asInstanceOf[ValueReader[AuditAttributes]]
 
   def parse(p: Any): Consequence[AuditAttributes] =
-    summon[ValueReader[org.simplemodeling.model.value.AuditAttributes]].readC(p)
+    ProjectionValueReaders.auditAttributes.readC(p)
 
   def apply(p: org.simplemodeling.model.value.AuditAttributes): org.simplemodeling.model.value.AuditAttributes = p
 }
@@ -134,10 +136,10 @@ type MediaAttributes = org.simplemodeling.model.value.MediaAttributes
 object MediaAttributes {
   export org.simplemodeling.model.value.MediaAttributes.Holder
 
-  given ValueReader[MediaAttributes] = summon[ValueReader[org.simplemodeling.model.value.MediaAttributes]].asInstanceOf[ValueReader[MediaAttributes]]
+  given ValueReader[MediaAttributes] = ProjectionValueReaders.mediaAttributes.asInstanceOf[ValueReader[MediaAttributes]]
 
   def parse(p: Any): Consequence[MediaAttributes] =
-    summon[ValueReader[org.simplemodeling.model.value.MediaAttributes]].readC(p)
+    ProjectionValueReaders.mediaAttributes.readC(p)
 
   def apply(p: org.simplemodeling.model.value.MediaAttributes): org.simplemodeling.model.value.MediaAttributes = p
 }
@@ -147,10 +149,10 @@ type ContextualAttributes = org.simplemodeling.model.value.ContextualAttributes
 object ContextualAttributes {
   export org.simplemodeling.model.value.ContextualAttributes.Holder
 
-  given ValueReader[ContextualAttributes] = summon[ValueReader[org.simplemodeling.model.value.ContextualAttributes]].asInstanceOf[ValueReader[ContextualAttributes]]
+  given ValueReader[ContextualAttributes] = ProjectionValueReaders.contextualAttributes.asInstanceOf[ValueReader[ContextualAttributes]]
 
   def parse(p: Any): Consequence[ContextualAttributes] =
-    summon[ValueReader[org.simplemodeling.model.value.ContextualAttributes]].readC(p)
+    ProjectionValueReaders.contextualAttributes.readC(p)
 
   def apply(p: org.simplemodeling.model.value.ContextualAttributes): org.simplemodeling.model.value.ContextualAttributes = p
 }
@@ -160,10 +162,10 @@ type BaseContent = org.simplemodeling.model.value.BaseContent
 object BaseContent {
   export org.simplemodeling.model.value.BaseContent.{Holder, BareHolder, Builder, simple}
 
-  given ValueReader[BaseContent] = summon[ValueReader[org.simplemodeling.model.value.BaseContent]].asInstanceOf[ValueReader[BaseContent]]
+  given ValueReader[BaseContent] = ProjectionValueReaders.baseContent.asInstanceOf[ValueReader[BaseContent]]
 
   def parse(p: Any): Consequence[BaseContent] =
-    summon[ValueReader[org.simplemodeling.model.value.BaseContent]].readC(p)
+    ProjectionValueReaders.baseContent.readC(p)
 
   def apply(p: org.simplemodeling.model.value.BaseContent): org.simplemodeling.model.value.BaseContent =
     org.goldenport.value.BaseContent(

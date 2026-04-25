@@ -1,7 +1,6 @@
 package org.simplemodeling.model
 
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
+import java.time.Instant
 import org.goldenport.datatype.Identifier
 import org.goldenport.datatype.Name
 import org.goldenport.datatype.ObjectId
@@ -18,7 +17,7 @@ import org.simplemodeling.model.value.ContextualAttributes
 /*
  * @since   Mar. 23, 2026
  *  version Mar. 29, 2026
- * @version Apr.  2, 2026
+ * @version Apr. 25, 2026
  * @author  ASAMI, Tomoharu
  */
 trait SimpleObjectDefaults extends SimpleObject {
@@ -30,10 +29,10 @@ trait SimpleObjectDefaults extends SimpleObject {
 
   override def lifecycleAttributes: LifecycleAttributes =
     LifecycleAttributes(
-      createdAt = ZonedDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC),
-      updatedAt = None,
+      createdAt = Instant.EPOCH,
+      updatedAt = Instant.EPOCH,
       createdBy = Identifier("system"),
-      updatedBy = None,
+      updatedBy = Identifier("system"),
       postStatus = org.simplemodeling.model.statemachine.PostStatus.default,
       aliveness = org.simplemodeling.model.statemachine.Aliveness.default
     )

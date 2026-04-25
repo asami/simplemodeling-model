@@ -1,7 +1,7 @@
 package org.simplemodeling.model.value
 
 import java.net.URL
-import java.time.LocalDate
+import java.time.{Instant, LocalDate, LocalDateTime, OffsetDateTime, ZoneId, ZonedDateTime}
 import java.util.{Locale, TimeZone}
 import scala.util.Try
 
@@ -13,7 +13,7 @@ import org.goldenport.schema.XString
 
 /*
  * @since   Apr.  9, 2026
- * @version Apr.  9, 2026
+ * @version Apr. 25, 2026
  * @author  ASAMI, Tomoharu
  */
 object BasicValueReaders
@@ -33,6 +33,57 @@ given ValueReader[LocalDate] =
               case Some(d) => Consequence.success(d)
               case None => Consequence.failValueInvalid(v, XString)
             }
+        case m: Record =>
+          m.getString("value") match {
+            case Some(s) => readC(s)
+            case None => Consequence.failValueInvalid(v, XString)
+          }
+        case _ => Consequence.failValueInvalid(v, XString)
+      }
+  }
+
+given ValueReader[Instant] =
+  new ValueReader[Instant] {
+    def readC(v: Any): Consequence[Instant] =
+      v match {
+        case m: Instant => Consequence.success(m)
+        case m: String =>
+          val s = m.trim
+          if (s.isEmpty)
+            Consequence.failValueInvalid(v, XString)
+          else
+            Try(Instant.parse(s)).toOption match {
+              case Some(d) => Consequence.success(d)
+              case None => Consequence.failValueInvalid(v, XString)
+            }
+        case m: Record =>
+          m.getString("value") match {
+            case Some(s) => readC(s)
+            case None => Consequence.failValueInvalid(v, XString)
+          }
+        case _ => Consequence.failValueInvalid(v, XString)
+      }
+  }
+
+given ValueReader[ZonedDateTime] =
+  new ValueReader[ZonedDateTime] {
+    def readC(v: Any): Consequence[ZonedDateTime] =
+      v match {
+        case m: ZonedDateTime => Consequence.success(m)
+        case m: OffsetDateTime => Consequence.success(m.toZonedDateTime)
+        case m: Instant => Consequence.success(ZonedDateTime.ofInstant(m, ZoneId.systemDefault()))
+        case m: LocalDateTime => Consequence.success(m.atZone(ZoneId.systemDefault()))
+        case m: String =>
+          val s = m.trim
+          if (s.isEmpty)
+            Consequence.failValueInvalid(v, XString)
+          else
+            Try(ZonedDateTime.parse(s)).toOption
+              .orElse(Try(OffsetDateTime.parse(s).toZonedDateTime).toOption)
+              .orElse(Try(Instant.parse(s)).toOption.map(ZonedDateTime.ofInstant(_, ZoneId.systemDefault()))) match {
+                case Some(d) => Consequence.success(d)
+                case None => Consequence.failValueInvalid(v, XString)
+              }
         case m: Record =>
           m.getString("value") match {
             case Some(s) => readC(s)
@@ -108,6 +159,16 @@ given ValueReader[TimeZone] =
 given Encoder[LocalDate] = Encoder.encodeString.contramap(_.toString)
 given Decoder[LocalDate] = Decoder.decodeString.emap { s =>
   Try(LocalDate.parse(s)).toEither.left.map(_ => s"Invalid LocalDate: $s")
+}
+
+given Encoder[Instant] = Encoder.encodeString.contramap(_.toString)
+given Decoder[Instant] = Decoder.decodeString.emap { s =>
+  Try(Instant.parse(s)).toEither.left.map(_ => s"Invalid Instant: $s")
+}
+
+given Encoder[ZonedDateTime] = Encoder.encodeString.contramap(_.toString)
+given Decoder[ZonedDateTime] = Decoder.decodeString.emap { s =>
+  Try(ZonedDateTime.parse(s)).toEither.left.map(_ => s"Invalid ZonedDateTime: $s")
 }
 
 given Encoder[URL] = Encoder.encodeString.contramap(_.toExternalForm)
