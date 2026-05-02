@@ -5,7 +5,8 @@ import org.goldenport.record.{Field, Record}
 
 /*
  * @since   Mar. 16, 2026
- * @version Mar. 29, 2026
+ *  version Mar. 29, 2026
+ * @version May.  2, 2026
  * @author  ASAMI, Tomoharu
  */
 sealed trait Update[+A] {
@@ -64,7 +65,7 @@ object Update {
   // Converts a patch record (fields may contain Update[_]) into datastore changes.
   // - Noop    => field removed from changes
   // - Set     => field value
-  // - SetNull => null value
+  // - SetNull => explicit clear marker; storage adapters decide the physical shape.
   def toChangesRecord(patch: Record): Record = {
     val fields = patch.fields.flatMap { field =>
       field.value match {
@@ -72,7 +73,7 @@ object Update {
           u match {
             case Noop => None
             case SetValue(value) => Some(field.key -> value)
-            case SetNull => Some(field.key -> null)
+            case SetNull => Some(field.key -> SetNull)
           }
         case Field.Value.Single(v) =>
           Some(field.key -> v)

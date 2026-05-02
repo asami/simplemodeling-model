@@ -18,7 +18,8 @@ import org.simplemodeling.model.value.SecurityAttributes
 /*
  * @since   Mar. 23, 2026
  *  version Mar. 29, 2026
- * @version Apr. 25, 2026
+ *  version Apr. 25, 2026
+ * @version May.  2, 2026
  * @author  ASAMI, Tomoharu
  */
 abstract class SimpleObjectCreate {
@@ -76,6 +77,15 @@ abstract class SimpleObjectCreate {
       privilegeId = sid
     )
   }
+
+  def ownerId: String =
+    securityAttributes.ownerId.id.value
+
+  def groupId: String =
+    securityAttributes.groupId.id.value
+
+  def privilegeId: String =
+    securityAttributes.privilegeId.id.value
 
   def resourceAttributes: ResourceAttributes =
     ResourceAttributes()

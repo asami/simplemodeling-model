@@ -13,7 +13,8 @@ import org.simplemodeling.model.value.ContextualAttributes
 /*
  * @since   Aug.  1, 2025
  *  version Aug.  4, 2025
- * @version Mar. 29, 2026
+ *  version Mar. 29, 2026
+ * @version May.  2, 2026
  * @author  ASAMI, Tomoharu
  */
 abstract class SimpleObject extends NameAttributes.Holder
@@ -25,6 +26,15 @@ abstract class SimpleObject extends NameAttributes.Holder
     with AuditAttributes.Holder
     with MediaAttributes.Holder   
     with ContextualAttributes.Holder {
+  def ownerId: String =
+    securityAttributes.ownerId.id.value
+
+  def groupId: String =
+    securityAttributes.groupId.id.value
+
+  def privilegeId: String =
+    securityAttributes.privilegeId.id.value
+
   // protected def name_Attributes: NameAttributes
   // protected def descriptive_Attributes: DescriptiveAttributes
   // protected def lifecycle_Attributes: LifecycleAttributes

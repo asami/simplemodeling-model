@@ -12,7 +12,8 @@ import org.goldenport.record.Record
  * @since   Aug.  1, 2025
  *  version Aug.  2, 2025
  *  version Mar. 29, 2026
- * @version Apr. 20, 2026
+ *  version Apr. 20, 2026
+ * @version May.  2, 2026
  * @author  ASAMI, Tomoharu
  */
 case class SecurityAttributes(
@@ -208,6 +209,7 @@ object SecurityAttributes {
       .orElse(_permission_record(Some(record), role, Vector("securityAttributes", "rights")))
       .orElse(_permission_record(Some(record), role, Vector("security_attributes", "rights")))
       .orElse(_permission_record_from_text(record, role, "rights"))
+      .orElse(_permission_record_from_text(record, role, "permission"))
       .map(Rights.Permissions.fromRecord)
       .orElse(_permission_text(record, role).map(Rights.Permissions.parse))
       .getOrElse(Rights.Permissions.none)
