@@ -1,9 +1,11 @@
 package org.simplemodeling.model.value
 
 import java.net.URL
+import java.nio.charset.Charset
 import java.time.Instant
 import java.time.ZonedDateTime
 import cats.data.NonEmptyVector
+import org.goldenport.datatype.MimeType
 import org.goldenport.datatype.Identifier
 import org.goldenport.datatype.I18nBrief
 import org.goldenport.datatype.I18nDescription
@@ -21,7 +23,8 @@ import org.simplemodeling.model.directive.Condition
 
 /*
  * @since   Mar. 23, 2026
- * @version May.  3, 2026
+ *  version Apr. 25, 2026
+ * @version May.  4, 2026
  * @author  ASAMI, Tomoharu
  */
 // NOTE:
@@ -49,9 +52,10 @@ case class DescriptiveAttributesQuery(
 )
 
 case class ContentAttributesQuery(
-  content: Condition[I18nText] = Condition.any[I18nText],
-  mimeType: Condition[String] = Condition.any[String],
-  markup: Condition[String] = Condition.any[String],
+  content: Condition[ContentBody] = Condition.any[ContentBody],
+  mimeType: Condition[MimeType] = Condition.any[MimeType],
+  charset: Condition[Charset] = Condition.any[Charset],
+  markup: Condition[ContentMarkup] = Condition.any[ContentMarkup],
   references: Condition[Vector[ContentReferenceOccurrence]] = Condition.any[Vector[ContentReferenceOccurrence]]
 )
 

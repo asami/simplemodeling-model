@@ -1,6 +1,7 @@
 package org.simplemodeling.model.value
 
 import java.net.URL
+import java.nio.charset.Charset
 import java.time.{Instant, LocalDate, LocalDateTime, OffsetDateTime, ZoneId, ZonedDateTime}
 import java.util.{Locale, TimeZone}
 import scala.util.Try
@@ -8,15 +9,55 @@ import scala.util.Try
 import io.circe.{Decoder, Encoder}
 import org.goldenport.Consequence
 import org.goldenport.convert.ValueReader
+import org.goldenport.datatype.MimeType
 import org.goldenport.record.Record
 import org.goldenport.schema.XString
 
 /*
  * @since   Apr.  9, 2026
- * @version Apr. 25, 2026
+ *  version Apr. 25, 2026
+ * @version May.  4, 2026
  * @author  ASAMI, Tomoharu
  */
 object BasicValueReaders
+
+given ValueReader[MimeType] =
+  new ValueReader[MimeType] {
+    def readC(v: Any): Consequence[MimeType] =
+      v match {
+        case m: MimeType => Consequence.success(m)
+        case m: String if m.trim.nonEmpty => Consequence.success(MimeType(m.trim))
+        case m: Record =>
+          m.getString("value") match {
+            case Some(s) => readC(s)
+            case None => Consequence.failValueInvalid(v, XString)
+          }
+        case _ => Consequence.failValueInvalid(v, XString)
+      }
+  }
+
+given ValueReader[Charset] =
+  new ValueReader[Charset] {
+    def readC(v: Any): Consequence[Charset] =
+      v match {
+        case m: Charset => Consequence.success(m)
+        case m: String =>
+          val s = m.trim
+          if (s.isEmpty)
+            Consequence.failValueInvalid(v, XString)
+          else
+            Try(Charset.forName(s)).toOption match {
+              case Some(cs) => Consequence.success(cs)
+              case None => Consequence.failValueInvalid(v, XString)
+            }
+        case m: Record =>
+          m.getString("value") match {
+            case Some(s) => readC(s)
+            case None => Consequence.failValueInvalid(v, XString)
+          }
+        case _ => Consequence.failValueInvalid(v, XString)
+      }
+  }
 
 given ValueReader[LocalDate] =
   new ValueReader[LocalDate] {

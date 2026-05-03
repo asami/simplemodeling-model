@@ -1,9 +1,11 @@
 package org.simplemodeling.model.value
 
 import java.net.URL
+import java.nio.charset.Charset
 import java.time.Instant
 import java.time.ZonedDateTime
 import cats.data.NonEmptyVector
+import org.goldenport.datatype.MimeType
 import org.goldenport.datatype.Identifier
 import org.goldenport.datatype.I18nBrief
 import org.goldenport.datatype.I18nDescription
@@ -25,7 +27,8 @@ import org.simplemodeling.model.directive.Update
 
 /*
  * @since   Mar. 23, 2026
- * @version May.  3, 2026
+ *  version Apr. 25, 2026
+ * @version May.  4, 2026
  * @author  ASAMI, Tomoharu
  */
 // NOTE:
@@ -54,9 +57,10 @@ case class DescriptiveAttributesUpdate(
 )
 
 case class ContentAttributesUpdate(
-  content: Update[I18nText] = Update.noop[I18nText],
-  mimeType: Update[String] = Update.noop[String],
-  markup: Update[String] = Update.noop[String],
+  content: Update[ContentBody] = Update.noop[ContentBody],
+  mimeType: Update[MimeType] = Update.noop[MimeType],
+  charset: Update[Charset] = Update.noop[Charset],
+  markup: Update[ContentMarkup] = Update.noop[ContentMarkup],
   references: Update[Vector[ContentReferenceOccurrence]] = Update.noop[Vector[ContentReferenceOccurrence]]
 )
 
@@ -69,6 +73,7 @@ given ValueReader[ContentAttributesUpdate] =
           ContentAttributesUpdate(
             content = m.content.map(Update.set).getOrElse(Update.noop),
             mimeType = m.mimeType.map(Update.set).getOrElse(Update.noop),
+            charset = m.charset.map(Update.set).getOrElse(Update.noop),
             markup = m.markup.map(Update.set).getOrElse(Update.noop),
             references = Update.set(m.references)
           )
@@ -78,6 +83,7 @@ given ValueReader[ContentAttributesUpdate] =
           ContentAttributesUpdate(
             content = attrs.content.map(Update.set).getOrElse(Update.noop),
             mimeType = attrs.mimeType.map(Update.set).getOrElse(Update.noop),
+            charset = attrs.charset.map(Update.set).getOrElse(Update.noop),
             markup = attrs.markup.map(Update.set).getOrElse(Update.noop),
             references =
               if (m.getAny("references").orElse(m.getAny("contentReferences")).orElse(m.getAny("content_references")).isDefined)
@@ -86,7 +92,7 @@ given ValueReader[ContentAttributesUpdate] =
                 Update.noop
           )
         }
-      case s: String => Consequence.success(ContentAttributesUpdate(content = Update.set(I18nText(s))))
+      case s: String => Consequence.success(ContentAttributesUpdate(content = Update.set(ContentBody(s))))
       case _ => Consequence.failValueInvalid(v, XString)
     }
   }

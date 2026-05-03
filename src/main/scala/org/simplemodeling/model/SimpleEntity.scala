@@ -7,7 +7,8 @@ import org.simplemodeling.model.datatype.EntityId
 /*
  * @since   Aug.  4, 2025
  *  version Mar. 29, 2026
- * @version Apr. 20, 2026
+ *  version Apr. 20, 2026
+ * @version May.  4, 2026
  * @author  ASAMI, Tomoharu
  */
 abstract class SimpleEntity extends SimpleObject {
@@ -23,5 +24,5 @@ abstract class SimpleEntity extends SimpleObject {
     nameAttributes.title.map(_.displayMessage(locale)).getOrElse("")
 
   def content(locale: Locale): Option[String] =
-    content.map(_.displayMessage(locale))
+    content.map(_.value)
 }

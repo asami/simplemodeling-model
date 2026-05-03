@@ -2,11 +2,11 @@ package org.simplemodeling.model
 
 import java.time.Instant
 import org.goldenport.datatype.Identifier
-import org.goldenport.datatype.I18nText
 import org.goldenport.datatype.Name
 import org.goldenport.datatype.ObjectId
 import org.simplemodeling.model.value.AuditAttributes
 import org.simplemodeling.model.value.ContextualAttributes
+import org.simplemodeling.model.value.ContentBody
 import org.simplemodeling.model.value.ContentAttributes
 import org.simplemodeling.model.value.DescriptiveAttributes
 import org.simplemodeling.model.value.LifecycleAttributes
@@ -20,7 +20,7 @@ import org.simplemodeling.model.value.SecurityAttributes
  * @since   Mar. 23, 2026
  *  version Mar. 29, 2026
  *  version Apr. 25, 2026
- * @version May.  3, 2026
+ * @version May.  4, 2026
  * @author  ASAMI, Tomoharu
  */
 abstract class SimpleObjectCreate {
@@ -43,11 +43,11 @@ abstract class SimpleObjectCreate {
   def contentAttributes: ContentAttributes =
     ContentAttributes.empty
 
-  def content: Option[I18nText] =
+  def content: Option[ContentBody] =
     contentAttributes.content
 
   def content(locale: java.util.Locale): Option[String] =
-    content.map(_.displayMessage(locale))
+    content.map(_.value)
 
   def lifecycleAttributes: LifecycleAttributes =
     LifecycleAttributes(
