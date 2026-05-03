@@ -2,6 +2,7 @@ package org.simplemodeling.model
 
 import org.simplemodeling.model.value.AuditAttributesUpdate
 import org.simplemodeling.model.value.ContextualAttributesUpdate
+import org.simplemodeling.model.value.ContentAttributesUpdate
 import org.simplemodeling.model.value.DescriptiveAttributesUpdate
 import org.simplemodeling.model.value.LifecycleAttributesUpdate
 import org.simplemodeling.model.value.MediaAttributesUpdate
@@ -13,7 +14,7 @@ import org.simplemodeling.model.value.SecurityAttributesUpdate
 /*
  * @since   Mar. 23, 2026
  *  version Mar. 29, 2026
- * @version Apr.  2, 2026
+ * @version May.  3, 2026
  * @author  ASAMI, Tomoharu
  */
 abstract class SimpleObjectUpdate {
@@ -27,6 +28,9 @@ abstract class SimpleObjectUpdate {
 
   def descriptiveAttributes: DescriptiveAttributesUpdate =
     DescriptiveAttributesUpdate()
+
+  def contentAttributes: ContentAttributesUpdate =
+    ContentAttributesUpdate()
 
   def lifecycleAttributes: LifecycleAttributesUpdate =
     LifecycleAttributesUpdate()

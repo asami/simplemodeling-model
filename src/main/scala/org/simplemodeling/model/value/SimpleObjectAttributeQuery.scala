@@ -21,7 +21,7 @@ import org.simplemodeling.model.directive.Condition
 
 /*
  * @since   Mar. 23, 2026
- * @version Apr. 25, 2026
+ * @version May.  3, 2026
  * @author  ASAMI, Tomoharu
  */
 // NOTE:
@@ -43,10 +43,16 @@ case class DescriptiveAttributesQuery(
   summary: Condition[I18nSummary] = Condition.any[I18nSummary],
   description: Condition[I18nDescription] = Condition.any[I18nDescription],
   lead: Condition[I18nSummary] = Condition.any[I18nSummary],
-  content: Condition[I18nText] = Condition.any[I18nText],
   `abstract`: Condition[I18nSummary] = Condition.any[I18nSummary],
   remarks: Condition[I18nSummary] = Condition.any[I18nSummary],
   tooltip: Condition[I18nLabel] = Condition.any[I18nLabel]
+)
+
+case class ContentAttributesQuery(
+  content: Condition[I18nText] = Condition.any[I18nText],
+  mimeType: Condition[String] = Condition.any[String],
+  markup: Condition[String] = Condition.any[String],
+  references: Condition[Vector[ContentReferenceOccurrence]] = Condition.any[Vector[ContentReferenceOccurrence]]
 )
 
 case class LifecycleAttributesQuery(

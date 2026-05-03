@@ -14,6 +14,10 @@ import org.goldenport.datatype.I18nTitle
 import org.goldenport.datatype.Name
 import org.goldenport.datatype.ObjectId
 import org.goldenport.datatype.Slug
+import org.goldenport.Consequence
+import org.goldenport.convert.ValueReader
+import org.goldenport.record.Record
+import org.goldenport.schema.XString
 import org.simplemodeling.model.statemachine.Aliveness
 import org.simplemodeling.model.statemachine.ActivationStatus
 import org.simplemodeling.model.statemachine.PostStatus
@@ -21,7 +25,7 @@ import org.simplemodeling.model.directive.Update
 
 /*
  * @since   Mar. 23, 2026
- * @version Apr. 25, 2026
+ * @version May.  3, 2026
  * @author  ASAMI, Tomoharu
  */
 // NOTE:
@@ -44,11 +48,48 @@ case class DescriptiveAttributesUpdate(
   summary: Update[I18nSummary] = Update.noop[I18nSummary],
   description: Update[I18nDescription] = Update.noop[I18nDescription],
   lead: Update[I18nSummary] = Update.noop[I18nSummary],
-  content: Update[I18nText] = Update.noop[I18nText],
   `abstract`: Update[I18nSummary] = Update.noop[I18nSummary],
   remarks: Update[I18nSummary] = Update.noop[I18nSummary],
   tooltip: Update[I18nLabel] = Update.noop[I18nLabel]
 )
+
+case class ContentAttributesUpdate(
+  content: Update[I18nText] = Update.noop[I18nText],
+  mimeType: Update[String] = Update.noop[String],
+  markup: Update[String] = Update.noop[String],
+  references: Update[Vector[ContentReferenceOccurrence]] = Update.noop[Vector[ContentReferenceOccurrence]]
+)
+
+given ValueReader[ContentAttributesUpdate] =
+  new ValueReader[ContentAttributesUpdate] {
+    def readC(v: Any): Consequence[ContentAttributesUpdate] = v match {
+      case m: ContentAttributesUpdate => Consequence.success(m)
+      case m: ContentAttributes =>
+        Consequence.success(
+          ContentAttributesUpdate(
+            content = m.content.map(Update.set).getOrElse(Update.noop),
+            mimeType = m.mimeType.map(Update.set).getOrElse(Update.noop),
+            markup = m.markup.map(Update.set).getOrElse(Update.noop),
+            references = Update.set(m.references)
+          )
+        )
+      case m: Record =>
+        ContentAttributes.createC(m).map { attrs =>
+          ContentAttributesUpdate(
+            content = attrs.content.map(Update.set).getOrElse(Update.noop),
+            mimeType = attrs.mimeType.map(Update.set).getOrElse(Update.noop),
+            markup = attrs.markup.map(Update.set).getOrElse(Update.noop),
+            references =
+              if (m.getAny("references").orElse(m.getAny("contentReferences")).orElse(m.getAny("content_references")).isDefined)
+                Update.set(attrs.references)
+              else
+                Update.noop
+          )
+        }
+      case s: String => Consequence.success(ContentAttributesUpdate(content = Update.set(I18nText(s))))
+      case _ => Consequence.failValueInvalid(v, XString)
+    }
+  }
 
 case class LifecycleAttributesUpdate(
   createdAt: Update[Instant] = Update.noop[Instant],

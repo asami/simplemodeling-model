@@ -2,6 +2,7 @@ package org.simplemodeling.model
 
 import org.simplemodeling.model.value.AuditAttributesQuery
 import org.simplemodeling.model.value.ContextualAttributesQuery
+import org.simplemodeling.model.value.ContentAttributesQuery
 import org.simplemodeling.model.value.DescriptiveAttributesQuery
 import org.simplemodeling.model.value.LifecycleAttributesQuery
 import org.simplemodeling.model.value.MediaAttributesQuery
@@ -13,7 +14,7 @@ import org.simplemodeling.model.value.SecurityAttributesQuery
 /*
  * @since   Mar. 23, 2026
  *  version Mar. 29, 2026
- * @version Apr.  2, 2026
+ * @version May.  3, 2026
  * @author  ASAMI, Tomoharu
  */
 abstract class SimpleObjectQuery {
@@ -26,6 +27,9 @@ abstract class SimpleObjectQuery {
 
   def descriptiveAttributes: DescriptiveAttributesQuery =
     DescriptiveAttributesQuery()
+
+  def contentAttributes: ContentAttributesQuery =
+    ContentAttributesQuery()
 
   def lifecycleAttributes: LifecycleAttributesQuery =
     LifecycleAttributesQuery()

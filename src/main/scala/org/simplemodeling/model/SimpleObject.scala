@@ -2,6 +2,7 @@ package org.simplemodeling.model
 
 import org.simplemodeling.model.value.NameAttributes
 import org.simplemodeling.model.value.DescriptiveAttributes
+import org.simplemodeling.model.value.ContentAttributes
 import org.simplemodeling.model.value.LifecycleAttributes
 import org.simplemodeling.model.value.PublicationAttributes
 import org.simplemodeling.model.value.SecurityAttributes
@@ -14,11 +15,12 @@ import org.simplemodeling.model.value.ContextualAttributes
  * @since   Aug.  1, 2025
  *  version Aug.  4, 2025
  *  version Mar. 29, 2026
- * @version May.  2, 2026
+ * @version May.  3, 2026
  * @author  ASAMI, Tomoharu
  */
 abstract class SimpleObject extends NameAttributes.Holder
     with DescriptiveAttributes.Holder
+    with ContentAttributes.Holder
     with LifecycleAttributes.Holder
     with PublicationAttributes.Holder
     with SecurityAttributes.Holder

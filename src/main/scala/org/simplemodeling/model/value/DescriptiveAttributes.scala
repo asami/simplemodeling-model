@@ -1,8 +1,8 @@
 package org.simplemodeling.model.value
 
-import org.goldenport.datatype.{I18nBrief, I18nDescription, I18nSummary, I18nText}
-import org.goldenport.convert.ValueReader
 import org.goldenport.Consequence
+import org.goldenport.convert.ValueReader
+import org.goldenport.datatype.{I18nBrief, I18nDescription, I18nSummary}
 import org.goldenport.record.Record
 import org.goldenport.schema.XString
 
@@ -14,7 +14,8 @@ import org.goldenport.schema.XString
  *  version Jan. 21, 2026
  *  version Mar. 29, 2026
  *  version Apr.  2, 2026
- * @version Apr. 17, 2026
+ *  version Apr. 17, 2026
+ * @version May.  3, 2026
  * @author  ASAMI, Tomoharu
  */
 type DescriptiveAttributes = org.goldenport.value.DescriptiveAttributes
@@ -30,7 +31,6 @@ object DescriptiveAttributes {
     headline: Option[I18nBrief] = None,
     summary: Option[I18nSummary] = None,
     description: Option[I18nDescription] = None,
-    content: Option[I18nText] = None
   ) {
     def withDescriptiveAttributes(p: DescriptiveAttributes): Builder = copy(descriptiveAttributes = Some(p))
     def withHeadline(p: I18nBrief): Builder = copy(headline = Some(p))
@@ -39,15 +39,11 @@ object DescriptiveAttributes {
     def withSummary(p: String): Builder = copy(summary = Some(I18nSummary(p)))
     def withDescription(p: I18nDescription): Builder = copy(description = Some(p))
     def withDescription(p: String): Builder = copy(description = Some(I18nDescription(p)))
-    def withContent(p: I18nText): Builder = copy(content = Some(p))
-    def withContent(p: String): Builder = copy(content = Some(I18nText(p)))
-
     def build(): DescriptiveAttributes = {
       val base = descriptiveAttributes.getOrElse(empty)
       val withheadline = headline.fold(base)(x => base.copy(headline = Some(x)))
       val withsummary = summary.fold(withheadline)(x => withheadline.copy(summary = Some(x)))
-      val withdescription = description.fold(withsummary)(x => withsummary.copy(description = Some(x)))
-      content.fold(withdescription)(x => withdescription.copy(content = Some(x)))
+      description.fold(withsummary)(x => withsummary.copy(description = Some(x)))
     }
   }
 
@@ -69,7 +65,6 @@ object DescriptiveAttributes {
     def summary = descriptiveAttributes.summary
     def description = descriptiveAttributes.description
     def lead = descriptiveAttributes.lead
-    def content = descriptiveAttributes.content
     def `abstract` = descriptiveAttributes.`abstract`
     def remarks = descriptiveAttributes.remarks
     def tooltip = descriptiveAttributes.tooltip
@@ -79,13 +74,12 @@ object DescriptiveAttributes {
 given ValueReader[DescriptiveAttributes] =
   new ValueReader[DescriptiveAttributes] {
     def readC(v: Any): Consequence[DescriptiveAttributes] = v match {
-      case m: org.goldenport.value.DescriptiveAttributes => Consequence.success(m)
+      case m: DescriptiveAttributes => Consequence.success(m)
       case m: Record =>
         val b = DescriptiveAttributes.Builder(
           headline = DescriptiveAttributes._string_value(m, "headline").map(I18nBrief(_)),
           summary = DescriptiveAttributes._string_value(m, "summary").map(I18nSummary(_)),
-          description = DescriptiveAttributes._string_value(m, "description").map(I18nDescription(_)),
-          content = DescriptiveAttributes._string_value(m, "content").map(I18nText(_))
+          description = DescriptiveAttributes._string_value(m, "description").map(I18nDescription(_))
         )
         Consequence.success(b.build())
       case _ => Consequence.failValueInvalid(v, XString)

@@ -7,6 +7,7 @@ import org.goldenport.datatype.Name
 import org.goldenport.datatype.ObjectId
 import org.simplemodeling.model.value.AuditAttributes
 import org.simplemodeling.model.value.ContextualAttributes
+import org.simplemodeling.model.value.ContentAttributes
 import org.simplemodeling.model.value.DescriptiveAttributes
 import org.simplemodeling.model.value.LifecycleAttributes
 import org.simplemodeling.model.value.MediaAttributes
@@ -19,7 +20,7 @@ import org.simplemodeling.model.value.SecurityAttributes
  * @since   Mar. 23, 2026
  *  version Mar. 29, 2026
  *  version Apr. 25, 2026
- * @version May.  2, 2026
+ * @version May.  3, 2026
  * @author  ASAMI, Tomoharu
  */
 abstract class SimpleObjectCreate {
@@ -39,8 +40,11 @@ abstract class SimpleObjectCreate {
   def descriptiveAttributes: DescriptiveAttributes =
     DescriptiveAttributes.empty
 
+  def contentAttributes: ContentAttributes =
+    ContentAttributes.empty
+
   def content: Option[I18nText] =
-    descriptiveAttributes.content
+    contentAttributes.content
 
   def content(locale: java.util.Locale): Option[String] =
     content.map(_.displayMessage(locale))

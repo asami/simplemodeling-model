@@ -7,7 +7,7 @@ import org.simplemodeling.model.value.{given, *}
 
 /*
  * @since   Apr. 21, 2026
- * @version Apr. 25, 2026
+ * @version May.  3, 2026
  * @author  ASAMI, Tomoharu
  */
 object ProjectionValueReaders {
@@ -16,6 +16,9 @@ object ProjectionValueReaders {
 
   val descriptiveAttributes: ValueReader[org.simplemodeling.model.value.DescriptiveAttributes] =
     summon[ValueReader[org.simplemodeling.model.value.DescriptiveAttributes]]
+
+  val contentAttributes: ValueReader[org.simplemodeling.model.value.ContentAttributes] =
+    summon[ValueReader[org.simplemodeling.model.value.ContentAttributes]]
 
   val lifecycleAttributes: ValueReader[org.simplemodeling.model.value.LifecycleAttributes] =
     summon[ValueReader[org.simplemodeling.model.value.LifecycleAttributes]]

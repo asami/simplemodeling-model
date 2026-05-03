@@ -19,7 +19,7 @@ import org.simplemodeling.model.value.*
 /*
  * @since   Apr.  2, 2026
  *  version Apr. 20, 2026
- * @version Apr. 25, 2026
+ * @version May.  3, 2026
  * @author  ASAMI, Tomoharu
  */
 type NameAttributes = org.simplemodeling.model.value.NameAttributes
@@ -76,7 +76,6 @@ object DescriptiveAttributes {
       summary = p.summary,
       description = None,
       lead = None,
-      content = None,
       `abstract` = None,
       remarks = None,
       tooltip = p.tooltip
