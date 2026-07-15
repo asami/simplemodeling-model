@@ -1,6 +1,6 @@
 import org.goldenport.cozy.CozyPlugin.autoImport._
 
-val scala3Version = "3.3.7"
+val scala3Version = "3.3.8"
 
 lazy val root = project
   .in(file("."))

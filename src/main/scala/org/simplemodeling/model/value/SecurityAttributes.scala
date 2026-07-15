@@ -13,7 +13,8 @@ import org.goldenport.record.Record
  *  version Aug.  2, 2025
  *  version Mar. 29, 2026
  *  version Apr. 20, 2026
- * @version May.  2, 2026
+ *  version May.  2, 2026
+ * @version Jul. 15, 2026
  * @author  ASAMI, Tomoharu
  */
 case class SecurityAttributes(
@@ -270,8 +271,19 @@ object SecurityAttributes {
   private def _object_id(text: String): ObjectId =
     ObjectId(Identifier(_identifier_text(text)))
 
-  private def _normalize(text: String): String =
-    text.toLowerCase(java.util.Locale.ROOT).replace("_", "").replace("-", "")
+  private def _normalize(text: String): String = {
+    val normalized = text.trim.toLowerCase(java.util.Locale.ROOT)
+    _strip_generated_identifier_prefix(normalized).replace("_", "").replace("-", "")
+  }
+
+  private def _strip_generated_identifier_prefix(text: String): String =
+    if (
+      (text.startsWith("id_") || text.startsWith("id-")) &&
+      text.drop(3).headOption.exists(_.isDigit)
+    )
+      text.drop(3)
+    else
+      text
 
   private def _identifier_text(text: String): String = {
     val sanitized = text.trim.map {

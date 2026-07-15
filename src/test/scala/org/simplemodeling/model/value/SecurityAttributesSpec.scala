@@ -8,7 +8,8 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 /*
  * @since   Dec. 22, 2025
  *  version Mar. 29, 2026
- * @version Apr. 20, 2026
+ *  version Apr. 20, 2026
+ * @version Jul. 15, 2026
  * @author  ASAMI, Tomoharu
  */
 class SecurityAttributesSpec extends AnyWordSpec
@@ -39,6 +40,28 @@ class SecurityAttributesSpec extends AnyWordSpec
       attributes.permissionFor("owner", "execute") shouldBe false
       attributes.permissionFor("group", "read") shouldBe false
       attributes.permissionFor("other", "read") shouldBe false
+    }
+
+    "match a numeric subject id after ObjectId adds its generated prefix" in {
+      val attributes = SecurityAttributes.privateOwnedBy("7hjjxQeJzVkVImNOpTs8o")
+
+      attributes.ownerId.id.value shouldBe "id_7hjjxQeJzVkVImNOpTs8o"
+      SecurityAttributes.roleFor(attributes, "7hjjxQeJzVkVImNOpTs8o", _ => false) shouldBe Some("owner")
+      SecurityAttributes.roleFor(attributes, "id_7hjjxQeJzVkVImNOpTs8o", _ => false) shouldBe Some("owner")
+    }
+
+    "preserve an explicit alphabetic id prefix during owner matching" in {
+      val attributes = SecurityAttributes.privateOwnedBy("id_alice")
+
+      SecurityAttributes.roleFor(attributes, "id_alice", _ => false) shouldBe Some("owner")
+      SecurityAttributes.roleFor(attributes, "alice", _ => false) shouldBe Some("other")
+    }
+
+    "preserve a raw id prefix followed directly by a digit" in {
+      val attributes = SecurityAttributes.privateOwnedBy("id7alice")
+
+      SecurityAttributes.roleFor(attributes, "id7alice", _ => false) shouldBe Some("owner")
+      SecurityAttributes.roleFor(attributes, "7alice", _ => false) shouldBe Some("other")
     }
 
     "read compact permission text" in {
