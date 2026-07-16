@@ -3,7 +3,7 @@ package org.simplemodeling.model.value
 import java.nio.charset.{Charset, StandardCharsets}
 import org.goldenport.Consequence
 import org.goldenport.convert.ValueReader
-import org.goldenport.datatype.{I18nText, MimeType}
+import org.goldenport.datatype.MimeType
 import org.goldenport.record.Record
 import org.goldenport.schema.XString
 
@@ -11,7 +11,7 @@ import org.goldenport.schema.XString
  * SimpleEntity content body and derived content-reference index.
  *
  * @since   May.  3, 2026
- * @version May.  4, 2026
+ * @version Jul. 16, 2026
  * @author  ASAMI, Tomoharu
  */
 type ContentBody = org.goldenport.value.ContentBody
@@ -24,7 +24,6 @@ object ContentBody {
     new ValueReader[ContentBody] {
       def readC(v: Any): Consequence[ContentBody] = v match {
         case m: org.goldenport.value.ContentBody => Consequence.success(m)
-        case m: I18nText => Consequence.success(ContentBody(m.toI18nString.displayMessage))
         case m: String => Consequence.success(ContentBody(m))
         case _ => Consequence.failValueInvalid(v, XString)
       }
@@ -138,7 +137,6 @@ object ContentAttributes {
   ) {
     def withContentAttributes(p: ContentAttributes): Builder = copy(contentAttributes = Some(p))
     def withContent(p: ContentBody): Builder = copy(content = Some(p))
-    def withContent(p: I18nText): Builder = withContent(ContentBody(p.toI18nString.displayMessage))
     def withContent(p: String): Builder = withContent(ContentBody(p))
     def withMimeType(p: MimeType): Builder = copy(mimeType = Some(p))
     def withMimeType(p: String): Builder = withMimeType(MimeType(p))
