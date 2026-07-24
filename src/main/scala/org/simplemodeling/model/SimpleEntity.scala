@@ -2,17 +2,22 @@ package org.simplemodeling.model
 
 import java.util.Locale
 import org.goldenport.datatype.Identifier
-import org.simplemodeling.model.datatype.EntityId
+import org.simplemodeling.model.datatype.{EntityId, EntityRevision}
 
 /*
  * @since   Aug.  4, 2025
  *  version Mar. 29, 2026
  *  version Apr. 20, 2026
- * @version May.  4, 2026
+ *  version May.  4, 2026
+ * @version Jul. 25, 2026
  * @author  ASAMI, Tomoharu
  */
 abstract class SimpleEntity extends SimpleObject {
   def id: EntityId
+
+  /** Framework-managed persistence revision. Application mutation input must not set it. */
+  def revision: EntityRevision
+
   def shortid: Option[Identifier] =
     Some(Identifier(id.parts.entropy))
 
