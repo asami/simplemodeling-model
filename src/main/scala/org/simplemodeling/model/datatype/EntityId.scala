@@ -10,7 +10,8 @@ import io.circe.Codec
  * @since   Apr. 11, 2025
  *  version Feb. 27, 2026
  *  version Mar. 31, 2026
- * @version May.  1, 2026
+ *  version May.  1, 2026
+ * @version Jul. 28, 2026
  * @author  ASAMI, Tomoharu
  */
 final case class EntityId(
@@ -20,9 +21,19 @@ final case class EntityId(
   timestamp: Option[java.time.Instant] = None,
   entropy: Option[String] = None
 ) extends UniversalId(major, minor, "entity", collection.name, timestamp, entropy) derives Codec.AsObject {
-  // Canonical machine-facing identifier string is `value`.
-  // Use `value` for persistence keys, lookup keys, joins, query parameters, and map keys.
-  // `print` is presentation-oriented, while `show` / `toString` are debugger-oriented summaries.
+  // `value` remains the physical datastore entry key. In-memory identity also
+  // includes the complete owning collection namespace.
+  override def equals(obj: Any): Boolean =
+    obj match {
+      case that: EntityId =>
+        value == that.value &&
+        collection == that.collection
+      case _ =>
+        false
+    }
+
+  override def hashCode(): Int =
+    (value, collection).##
 }
 
 object EntityId {
