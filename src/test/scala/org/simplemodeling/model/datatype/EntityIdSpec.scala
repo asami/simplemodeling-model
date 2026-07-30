@@ -16,8 +16,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 /*
  * @since   May.  1, 2026
- *  version May.  1, 2026
- * @version Jul. 29, 2026
+ * @version Jul. 30, 2026
  * @author  ASAMI, Tomoharu
  */
 final class EntityIdSpec extends AnyWordSpec
@@ -86,7 +85,8 @@ final class EntityIdSpec extends AnyWordSpec
         "textus-artscene-entity_collection-ec1_1_1_8_artscene_8_facility-0-stable",
         "textus-artscene-entity_collection-ec1_6_text-0-stable",
         "textus-artscene-entity_collection-ec1_2147483648_x-0-stable",
-        "textus-artscene-entity_collection-ec1_6_textus_8_artscene_8_facility_tail-0-stable"
+        "textus-artscene-entity_collection-ec1_6_textus_8_artscene_8_facility_tail-0-stable",
+        "textus-artscene-entity_collection-ec1_6_textus_8_artscene_8_facility-1-other"
       )
 
       invalid.foreach { value =>
@@ -112,6 +112,36 @@ final class EntityIdSpec extends AnyWordSpec
       Then("both boundaries reject it before emitting an unparsable canonical value")
       direct.failed.toOption shouldBe defined
       record shouldBe None
+    }
+  }
+
+  "AggregateCollectionId and ViewCollectionId ValueReaders" should {
+    "round-trip typed and canonical values while rejecting untyped input without throwing" in {
+      Given("typed aggregate and view collection identities with their canonical String values")
+      val aggregate = AggregateCollectionId("textus", "artscene", "facility")
+      val view = ViewCollectionId("textus", "artscene", "facility")
+      val aggregatehostile = aggregate.value.stripSuffix("-0-stable") + "-1-other"
+      val viewhostile = view.value.stripSuffix("-0-stable") + "-1-other"
+      val aggregatereader = summon[org.goldenport.convert.ValueReader[AggregateCollectionId]]
+      val viewreader = summon[org.goldenport.convert.ValueReader[ViewCollectionId]]
+
+      When("each reader receives typed, canonical, and invalid untyped input")
+      val aggregatevalues = Vector(
+        aggregatereader.readC(aggregate).toOption,
+        aggregatereader.readC(aggregate.value).toOption,
+        aggregatereader.readC(42).toOption,
+        aggregatereader.readC(aggregatehostile).toOption
+      )
+      val viewvalues = Vector(
+        viewreader.readC(view).toOption,
+        viewreader.readC(view.value).toOption,
+        viewreader.readC(42).toOption,
+        viewreader.readC(viewhostile).toOption
+      )
+
+      Then("canonical values round-trip and invalid untyped values become failures")
+      aggregatevalues shouldBe Vector(Some(aggregate), Some(aggregate), None, None)
+      viewvalues shouldBe Vector(Some(view), Some(view), None, None)
     }
   }
 
@@ -250,12 +280,19 @@ final class EntityIdSpec extends AnyWordSpec
     }
 
     "keep canonical values stable through Record, JSON, HTTP, form, CLI, log, and datastore boundaries" in {
-      Given("an EntityId with materialized default outer fields and a complete canonical value")
+      Given("an EntityId with materialized unique default outer fields and a complete canonical value")
+      val before = Instant.ofEpochMilli(Instant.now().toEpochMilli)
       val original = EntityId(
         "single",
         "global",
         EntityCollectionId("textus", "artscene", "facility")
       )
+      val repeated = EntityId(
+        "single",
+        "global",
+        EntityCollectionId("textus", "artscene", "facility")
+      )
+      val after = Instant.ofEpochMilli(Instant.now().toEpochMilli)
       val canonical = original.value
 
       When("the canonical String crosses standard scalar boundary encoders")
@@ -279,8 +316,11 @@ final class EntityIdSpec extends AnyWordSpec
 
       Then("every boundary preserves the same canonical String without an application wrapper")
       recorddecoded shouldBe Some(original)
-      original.timestamp shouldBe defined
+      original.timestamp.map(value => Instant.ofEpochMilli(value.toEpochMilli)) shouldBe original.timestamp
+      original.timestamp.exists(value => !value.isBefore(before) && !value.isAfter(after)) shouldBe true
       original.entropy shouldBe defined
+      repeated should not equal original
+      repeated.entropy should not equal original.entropy
       copied shouldBe original
       json shouldBe s"\"$canonical\""
       jsondecoded shouldBe Right(original)

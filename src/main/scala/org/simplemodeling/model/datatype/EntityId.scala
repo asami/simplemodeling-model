@@ -92,7 +92,7 @@ private object EntityCollectionIdPayload {
  *  version Feb. 27, 2026
  *  version Mar. 31, 2026
  *  version May.  1, 2026
- * @version Jul. 29, 2026
+ * @version Jul. 30, 2026
  * @author  ASAMI, Tomoharu
  */
 final case class EntityId(
@@ -303,19 +303,22 @@ object EntityCollectionId {
       Consequence.valueInvalid("Invalid EntityCollectionId value: null")
     else
       UniversalId.parseParts(s, "entity_collection").flatMap { parts =>
-        parts.subkind match {
-          case Some(payload) =>
-            EntityCollectionIdPayload.decode(payload).flatMap { collectionparts =>
-              if (collectionparts._1 != parts.major || collectionparts._2 != parts.minor)
-                Consequence.valueInvalid("EntityCollectionId outer namespace does not match its payload")
-              else
-                Consequence.success(
-                  EntityCollectionId(collectionparts._1, collectionparts._2, collectionparts._3)
-                )
-            }
-          case None =>
-            Consequence.valueFormatError(s"Invalid EntityCollectionId format: missing collection payload in '$s'")
-        }
+        if (parts.timestamp != UniversalId.StableTimestamp || parts.entropy != UniversalId.StableEntropy)
+          Consequence.valueInvalid("EntityCollectionId requires the canonical stable timestamp and entropy")
+        else
+          parts.subkind match {
+            case Some(payload) =>
+              EntityCollectionIdPayload.decode(payload).flatMap { collectionparts =>
+                if (collectionparts._1 != parts.major || collectionparts._2 != parts.minor)
+                  Consequence.valueInvalid("EntityCollectionId outer namespace does not match its payload")
+                else
+                  Consequence.success(
+                    EntityCollectionId(collectionparts._1, collectionparts._2, collectionparts._3)
+                  )
+              }
+            case None =>
+              Consequence.valueFormatError(s"Invalid EntityCollectionId format: missing collection payload in '$s'")
+          }
       }
 }
 
@@ -338,11 +341,14 @@ object AggregateCollectionId {
       case None => Consequence.failure("Invalid AggregateCollectionId value: null")
       case Some(value) => value match {
         case id: AggregateCollectionId => Consequence.success(id)
-        case s: String => ???
-        case other => ???
+        case s: String => parse(s)
+        case other => Consequence.valueInvalid(s"Invalid AggregateCollectionId value type: ${other.getClass.getName}")
       }
     }
   }
+
+  def parse(s: String): Consequence[AggregateCollectionId] =
+    _parse(s, "aggregate_collection", AggregateCollectionId.apply, "AggregateCollectionId")
 }
 
 final case class ViewCollectionId(
@@ -364,9 +370,31 @@ object ViewCollectionId {
       case None => Consequence.failure("Invalid ViewCollectionId value: null")
       case Some(value) => value match {
         case id: ViewCollectionId => Consequence.success(id)
-        case s: String => ???
-        case other => ???
+        case s: String => parse(s)
+        case other => Consequence.valueInvalid(s"Invalid ViewCollectionId value type: ${other.getClass.getName}")
       }
     }
   }
+
+  def parse(s: String): Consequence[ViewCollectionId] =
+    _parse(s, "view_collection", ViewCollectionId.apply, "ViewCollectionId")
 }
+
+private def _parse[A](
+  value: String,
+  kind: String,
+  build: (String, String, String) => A,
+  label: String
+): Consequence[A] =
+  if (value == null)
+    Consequence.valueInvalid(s"Invalid $label value: null")
+  else
+    UniversalId.parseParts(value, kind).flatMap { parts =>
+      if (parts.timestamp != UniversalId.StableTimestamp || parts.entropy != UniversalId.StableEntropy)
+        Consequence.valueInvalid(s"Invalid $label format: expected canonical stable timestamp and entropy")
+      else
+        parts.subkind match {
+          case Some(name) if name.nonEmpty => Consequence.success(build(parts.major, parts.minor, name))
+          case _ => Consequence.valueFormatError(s"Invalid $label format: missing name in '$value'")
+        }
+    }
