@@ -1,0 +1,15 @@
+project:
+  namespace: "org.simplemodeling"
+  id: "SimpleModelingModel"
+  kind: "library"
+  component:
+    version: "0.2.1"
+
+build:
+  scalaVersion: "3.3.8"
+  dependencies:
+    compile:
+      - "org.goldenport::goldenport-cncf:0.5.2"
+
+packaging:
+  kind: "maven"
