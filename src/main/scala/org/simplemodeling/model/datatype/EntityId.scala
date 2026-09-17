@@ -3,7 +3,7 @@ package org.simplemodeling.model.datatype
 import org.goldenport.Consequence
 import java.time.Instant
 import io.circe.{Codec, Decoder, Encoder}
-import org.goldenport.id.{CompactUuid, UniversalId}
+import org.goldenport.id.UniversalId
 import org.goldenport.convert.ValueReader
 import org.goldenport.record.Record
 
@@ -92,15 +92,15 @@ private object EntityCollectionIdPayload {
  *  version Feb. 27, 2026
  *  version Mar. 31, 2026
  *  version May.  1, 2026
- * @version Jul. 30, 2026
+ * @version Sep. 16, 2026
  * @author  ASAMI, Tomoharu
  */
-final case class EntityId(
-  major: String,
-  minor: String,
-  collection: EntityCollectionId,
-  timestamp: Option[Instant] = Some(Instant.ofEpochMilli(Instant.now().toEpochMilli)),
-  entropy: Option[String] = Some(CompactUuid.generateString())
+abstract class EntityId protected (
+  val major: String,
+  val minor: String,
+  val collection: EntityCollectionId,
+  val timestamp: Option[Instant],
+  val entropy: Option[String]
 ) extends UniversalId(
   major,
   minor,
@@ -127,6 +127,14 @@ final case class EntityId(
 object EntityId {
   private val _record_keys = Vector("id", "entityId", "entity_id")
   private val _entropy_pattern = "[A-Za-z0-9_]+"
+
+  private final class GenericEntityId(
+    major: String,
+    minor: String,
+    collection: EntityCollectionId,
+    timestamp: Instant,
+    entropy: String
+  ) extends EntityId(major, minor, collection, Some(timestamp), Some(entropy))
 
   given Codec[EntityId] = Codec.from(
     Decoder.decodeString.emap(value => parse(value).toOption.toRight(s"Invalid EntityId value: '$value'")),
@@ -166,7 +174,7 @@ object EntityId {
         parts.subkind match {
           case Some(payload) =>
             EntityCollectionIdPayload.decode(payload).flatMap { collectionparts =>
-              _create(
+              restore(
                 major = parts.major,
                 minor = parts.minor,
                 collection = EntityCollectionId(
@@ -190,7 +198,7 @@ object EntityId {
       collection <- _collection(p)
       timestamp <- _timestamp(p)
       entropy <- _entropy(p)
-      identity <- _create(major, minor, collection, timestamp, entropy)
+      identity <- restore(major, minor, collection, timestamp, entropy)
     } yield identity
 
   private def _collection(p: Record): Consequence[EntityCollectionId] =
@@ -219,7 +227,11 @@ object EntityId {
       case None => Consequence.failure("Invalid EntityId record: missing entropy")
     }
 
-  private def _create(
+  /**
+   * Restores a complete saved generic entity identity without issuing timestamp
+   * or entropy. Domain-specific callers must use their typed restoration path.
+   */
+  def restore(
     major: String,
     minor: String,
     collection: EntityCollectionId,
@@ -231,8 +243,21 @@ object EntityId {
     else if (!_is_canonical_entropy(entropy))
       Consequence.valueInvalid("Invalid EntityId entropy: expected nonempty alphanumeric or underscore")
     else
-      Consequence.success(EntityId(major, minor, collection, Some(timestamp), Some(entropy)))
+      Consequence.success(new GenericEntityId(major, minor, collection, timestamp, entropy))
   }
+
+  /**
+   * Materializes explicitly supplied canonical parts for an admitted special
+   * bridge. This is intentionally distinct from ordinary concrete issuance.
+   */
+  def bridgeFromParts(
+    major: String,
+    minor: String,
+    collection: EntityCollectionId,
+    timestamp: Instant,
+    entropy: String
+  ): Consequence[EntityId] =
+    restore(major, minor, collection, timestamp, entropy)
 
   private def _is_canonical_entropy(value: String): Boolean =
     value.matches(_entropy_pattern)

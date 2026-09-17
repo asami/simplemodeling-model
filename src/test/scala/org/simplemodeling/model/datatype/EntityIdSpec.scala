@@ -1,12 +1,11 @@
 package org.simplemodeling.model.datatype
 
-import java.net.{URI, URLDecoder, URLEncoder}
-import java.nio.charset.StandardCharsets
 import java.time.Instant
-import java.util.Properties
-import java.util.logging.{Level, LogRecord, SimpleFormatter}
+import io.circe.{Codec, Decoder, Encoder}
 import io.circe.parser.decode
 import io.circe.syntax.*
+import org.goldenport.Consequence
+import org.goldenport.id.CompactUuid
 import org.goldenport.record.Record
 import org.scalacheck.Gen
 import org.scalatest.GivenWhenThen
@@ -16,7 +15,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 /*
  * @since   May.  1, 2026
- * @version Jul. 30, 2026
+ * @version Sep. 16, 2026
  * @author  ASAMI, Tomoharu
  */
 final class EntityIdSpec extends AnyWordSpec
@@ -45,7 +44,70 @@ final class EntityIdSpec extends AnyWordSpec
       collection <- _collection
       timestamp <- _timestamp
       entropy <- _label
-    } yield EntityId(major, minor, collection, Some(timestamp), Some(entropy))
+    } yield EntityId.restore(major, minor, collection, timestamp, entropy).toOption.get
+
+  private final class FacilityId private (
+    major: String,
+    minor: String,
+    timestamp: Instant,
+    entropy: String
+  ) extends EntityId(major, minor, FacilityId.collection, Some(timestamp), Some(entropy))
+
+  private object FacilityId {
+    val collection = EntityCollectionId("textus", "artscene", "facility")
+
+    def issue(major: String, minor: String): FacilityId =
+      new FacilityId(
+        major,
+        minor,
+        Instant.ofEpochMilli(Instant.now().toEpochMilli),
+        CompactUuid.generateString()
+      )
+
+    def restore(value: String): Consequence[FacilityId] =
+      EntityId.parse(value).flatMap(_from_generic)
+
+    def restore(record: Record): Consequence[FacilityId] =
+      EntityId.createC(record).flatMap(_from_generic)
+
+    def bridgeFromParts(
+      major: String,
+      minor: String,
+      timestamp: Instant,
+      entropy: String
+    ): Consequence[FacilityId] =
+      EntityId.bridgeFromParts(major, minor, collection, timestamp, entropy).flatMap(_from_generic)
+
+    given Codec[FacilityId] = Codec.from(
+      Decoder.decodeString.emap(value => restore(value).toOption.toRight(s"Invalid FacilityId value: '$value'")),
+      Encoder.encodeString.contramap(_.value)
+    )
+
+    private def _from_generic(value: EntityId): Consequence[FacilityId] =
+      if (value.collection != collection)
+        Consequence.valueInvalid("FacilityId requires its expected complete collection")
+      else
+        Consequence.success(new FacilityId(value.major, value.minor, value.timestamp.get, value.entropy.get))
+  }
+
+  private final class VenueId private (
+    major: String,
+    minor: String,
+    timestamp: Instant,
+    entropy: String
+  ) extends EntityId(major, minor, VenueId.collection, Some(timestamp), Some(entropy))
+
+  private object VenueId {
+    val collection = EntityCollectionId("textus", "artscene", "venue")
+
+    def issue(major: String, minor: String): VenueId =
+      new VenueId(
+        major,
+        minor,
+        Instant.ofEpochMilli(Instant.now().toEpochMilli),
+        CompactUuid.generateString()
+      )
+  }
 
   "EntityCollectionId canonical serialization" should {
     "retain an exact namespace in the established UniversalId outer grammar" in {
@@ -145,59 +207,96 @@ final class EntityIdSpec extends AnyWordSpec
     }
   }
 
-  "EntityId canonical serialization" should {
-    "round-trip an exact collection without collection context" in {
-      Given("an EntityId whose entry namespace differs from its exact collection namespace")
-      val original = EntityId(
-        "single",
-        "global",
-        EntityCollectionId("textus", "artscene", "facility"),
-        Some(Instant.EPOCH),
-        Some("stable")
-      )
+  "EntityId inheritance and restoration" should {
+    "materialize ordinary identities only through concrete subtypes" in {
+      Given("two concrete entity identity subtypes with distinct complete collections")
+      val before = Instant.ofEpochMilli(Instant.now().toEpochMilli)
 
-      When("the canonical String is parsed")
+      When("each concrete factory issues an identity")
+      val facility = FacilityId.issue("single", "global")
+      val venue = VenueId.issue("single", "global")
+      val after = Instant.ofEpochMilli(Instant.now().toEpochMilli)
+      val generic: Vector[EntityId] = Vector(facility, venue)
+      val issuedtimestamp = facility.timestamp
+      val issuedentropy = facility.entropy
+      val firstvalue = facility.value
+      val repeatedvalue = facility.value
+
+      Then("both inhabit the abstract EntityId boundary without becoming interchangeable")
+      facility shouldBe a[EntityId]
+      venue shouldBe a[EntityId]
+      generic.map(_.collection) shouldBe Vector(FacilityId.collection, VenueId.collection)
+      facility.value should not equal venue.value
+
+      And("ordinary issuance materializes timestamp and entropy once and keeps identity immutable")
+      facility.timestamp.exists(value => !value.isBefore(before) && !value.isAfter(after)) shouldBe true
+      facility.entropy shouldBe defined
+      firstvalue shouldBe repeatedvalue
+      facility.timestamp shouldBe issuedtimestamp
+      facility.entropy shouldBe issuedentropy
+      facility.hashCode shouldBe facility.hashCode
+    }
+
+    "round-trip generic restoration without inferring a domain subtype" in {
+      Given("a canonical FacilityId whose entry namespace differs from its collection namespace")
+      val original = FacilityId.bridgeFromParts("single", "global", Instant.EPOCH, "stable").toOption.get
+
+      When("the generic parser restores its complete canonical value")
       val parsed = EntityId.parse(original.value).toOption
 
-      Then("the canonical value includes the exact collection and parses as a pure inverse")
-      original.value shouldBe
-        "single-global-entity-ec1_6_textus_8_artscene_8_facility-0-stable"
+      Then("the generic boundary retains exact identity but does not claim the FacilityId subtype")
+      original.value shouldBe "single-global-entity-ec1_6_textus_8_artscene_8_facility-0-stable"
       parsed shouldBe Some(original)
+      parsed.map(_.getClass) should not equal Some(original.getClass)
+      parsed.map(_.collection) shouldBe Some(FacilityId.collection)
     }
 
-    "remain deterministic and non-colliding for distinct exact collections" in {
-      Given("two EntityIds with identical local fields and different exact collection namespaces")
-      val timestamp = Some(Instant.parse("2026-07-29T00:00:00Z"))
-      val entropy = Some("same_entry")
-      val first = EntityId(
-        "single",
-        "global",
-        EntityCollectionId("textus", "artscene", "facility"),
-        timestamp,
-        entropy
-      )
-      val second = EntityId(
-        "single",
-        "global",
-        EntityCollectionId("textus", "administration", "facility"),
-        timestamp,
-        entropy
-      )
+    "restore typed and generic canonical Record and JSON values with complete collection checks" in {
+      Given("a deterministic FacilityId and a different concrete VenueId")
+      val facility = FacilityId.bridgeFromParts("single", "global", Instant.EPOCH, "stable").toOption.get
+      val venue = VenueId.issue("single", "global")
+      val record = Record.dataAuto("id" -> facility.value)
+      val generic: EntityId = facility
+      val genericjson = generic.asJson.noSpaces
+      val typedjson = facility.asJson.noSpaces
 
-      When("the canonical values are compared and used as map keys")
-      val entries = Map(first -> "first", second -> "second")
+      When("generic and typed restoration paths receive canonical, Record, and JSON forms")
+      val genericparsed = EntityId.parse(facility.value).toOption
+      val genericrecord = EntityId.createC(record).toOption
+      val genericdecoded = decode[EntityId](genericjson)
+      val typedparsed = FacilityId.restore(facility.value).toOption
+      val typedrecord = FacilityId.restore(record).toOption
+      val typeddecoded = decode[FacilityId](typedjson)
+      val rejected = FacilityId.restore(venue.value).toOption
 
-      Then("complete canonical values and identity-sensitive maps retain both owners")
-      first.value should not equal second.value
-      first should not equal second
-      entries should have size 2
-      entries(first) shouldBe "first"
-      entries(second) shouldBe "second"
+      Then("generic transport preserves canonical identity and typed transport restores only its declared collection")
+      genericparsed shouldBe Some(facility)
+      genericrecord shouldBe Some(facility)
+      genericdecoded shouldBe Right(facility)
+      typedparsed shouldBe Some(facility)
+      typedrecord shouldBe Some(facility)
+      typeddecoded shouldBe Right(facility)
+      rejected shouldBe None
     }
 
-    "preserve exact identity and canonical equality for arbitrary admitted outer fields" in {
+    "retain explicit restoration and special bridge boundaries without synthetic entropy" in {
+      Given("complete canonical identity parts including a fixed timestamp and entropy")
+      val collection = EntityCollectionId("textus", "administration", "facility")
+
+      When("the generic restore and explicit bridge operations materialize those supplied parts")
+      val restored = EntityId.restore("single", "global", collection, Instant.EPOCH, "stable").toOption
+      val bridged = EntityId.bridgeFromParts("single", "global", collection, Instant.EPOCH, "stable").toOption
+
+      Then("both recovery-oriented operations retain exact deterministic fields without ordinary issuance")
+      restored shouldBe bridged
+      restored.map(_.value) shouldBe Some("single-global-entity-ec1_6_textus_14_administration_8_facility-0-stable")
+      restored.map(_.timestamp) shouldBe Some(Some(Instant.EPOCH))
+      restored.map(_.entropy) shouldBe Some(Some("stable"))
+    }
+
+    "preserve exact identity and canonical equality for arbitrary admitted restored fields" in {
       forAll(_entity) { original =>
-        Given("an EntityId with generated entry, collection, timestamp, and entropy fields")
+        Given("a generic restored EntityId with complete outer and collection fields")
 
         When("the canonical EntityId value is parsed")
         val parsed = EntityId.parse(original.value).toOption.get
@@ -209,8 +308,8 @@ final class EntityIdSpec extends AnyWordSpec
       }
     }
 
-    "reject legacy and hostile scalar input without synthetic collection construction" in {
-      Given("legacy and invalid outer UniversalId strings")
+    "reject legacy hostile and incomplete recovery input without synthetic collection construction" in {
+      Given("legacy scalar values and invalid explicit recovery parts")
       val invalid = Vector(
         "single-global-entity-facility-0-stable",
         "single-global-entity-ec2_6_textus_8_artscene_8_facility-0-stable",
@@ -219,120 +318,21 @@ final class EntityIdSpec extends AnyWordSpec
         "single-global-entity-ec1_6_textus_8_artscene_8_facility-0-stable-extra",
         "single-global-entity-ec1_6_textus_8_artscene_8_facility-0-unsafe-entropy"
       )
+      val collection = EntityCollectionId("textus", "artscene", "facility")
 
-      invalid.foreach { value =>
-        When(s"the scalar '$value' is parsed as an EntityId")
-        val parsed = EntityId.parse(value).toOption
-
-        Then("the parser returns no EntityId and never infers collection ownership")
-        parsed shouldBe None
-      }
-    }
-
-    "reject null parsing and unmaterialized, noncanonical, or delimiter-unsafe direct construction" in {
-      Given("a null scalar and direct EntityId arguments outside the canonical contract")
-
-      When("the parser and constructor boundaries receive invalid inputs")
+      When("generic parsing and restoration receive malformed or noncanonical input")
+      val parsed = invalid.map(EntityId.parse(_).toOption)
       val nullparsed = EntityId.parse(null).toOption
-      val delimiterconstruction = scala.util.Try(EntityId(
-        "single",
-        "global",
-        EntityCollectionId("textus", "artscene", "facility"),
-        Some(Instant.EPOCH),
-        Some("same-entry")
-      ))
-      val missingtimestamp = scala.util.Try(EntityId(
-        "single",
-        "global",
-        EntityCollectionId("textus", "artscene", "facility"),
-        None,
-        Some("stable")
-      ))
-      val missingentropy = scala.util.Try(EntityId(
-        "single",
-        "global",
-        EntityCollectionId("textus", "artscene", "facility"),
-        Some(Instant.EPOCH),
-        None
-      ))
-      val preepochtimestamp = scala.util.Try(EntityId(
-        "single",
-        "global",
-        EntityCollectionId("textus", "artscene", "facility"),
-        Some(Instant.ofEpochMilli(-1)),
-        Some("stable")
-      ))
-      val submillisecondtimestamp = scala.util.Try(EntityId(
-        "single",
-        "global",
-        EntityCollectionId("textus", "artscene", "facility"),
-        Some(Instant.ofEpochSecond(0, 1)),
-        Some("stable")
-      ))
+      val delimiterbridge = EntityId.bridgeFromParts("single", "global", collection, Instant.EPOCH, "same-entry").toOption
+      val preepochrestore = EntityId.restore("single", "global", collection, Instant.ofEpochMilli(-1), "stable").toOption
+      val submillisecondrestore = EntityId.restore("single", "global", collection, Instant.ofEpochSecond(0, 1), "stable").toOption
 
-      Then("the null parser fails and direct construction cannot create an unmaterialized, ambiguous, or non-round-trippable ID")
+      Then("every rejected input fails without issuing an ID or deriving collection ownership")
+      parsed shouldBe Vector.fill(invalid.size)(None)
       nullparsed shouldBe None
-      delimiterconstruction.failed.toOption shouldBe defined
-      missingtimestamp.failed.toOption shouldBe defined
-      missingentropy.failed.toOption shouldBe defined
-      preepochtimestamp.failed.toOption shouldBe defined
-      submillisecondtimestamp.failed.toOption shouldBe defined
-    }
-
-    "keep canonical values stable through Record, JSON, HTTP, form, CLI, log, and datastore boundaries" in {
-      Given("an EntityId with materialized unique default outer fields and a complete canonical value")
-      val before = Instant.ofEpochMilli(Instant.now().toEpochMilli)
-      val original = EntityId(
-        "single",
-        "global",
-        EntityCollectionId("textus", "artscene", "facility")
-      )
-      val repeated = EntityId(
-        "single",
-        "global",
-        EntityCollectionId("textus", "artscene", "facility")
-      )
-      val after = Instant.ofEpochMilli(Instant.now().toEpochMilli)
-      val canonical = original.value
-
-      When("the canonical String crosses standard scalar boundary encoders")
-      val record = Record.dataAuto("id" -> canonical)
-      val copied = original.copy()
-      val json = original.asJson.noSpaces
-      val collectionjson = original.collection.asJson.noSpaces
-      val encoded = URLEncoder.encode(canonical, StandardCharsets.UTF_8)
-      val uri = URI.create(s"https://example.test/entities/$canonical?id=$encoded")
-      val form = s"id=$encoded"
-      val cli = new ProcessBuilder("entity-cli", "--id", canonical).command()
-      val logrecord = new LogRecord(Level.INFO, "entity.id={0}")
-      logrecord.setParameters(Array(canonical))
-      val log = new SimpleFormatter().format(logrecord)
-      val datastore = new Properties()
-      datastore.setProperty(canonical, "stored")
-      val reader = summon[org.goldenport.convert.ValueReader[EntityId]]
-      val recorddecoded = reader.readC(record).toOption
-      val jsondecoded = decode[EntityId](json)
-      val collectiondecoded = decode[EntityCollectionId](collectionjson)
-
-      Then("every boundary preserves the same canonical String without an application wrapper")
-      recorddecoded shouldBe Some(original)
-      original.timestamp.map(value => Instant.ofEpochMilli(value.toEpochMilli)) shouldBe original.timestamp
-      original.timestamp.exists(value => !value.isBefore(before) && !value.isAfter(after)) shouldBe true
-      original.entropy shouldBe defined
-      repeated should not equal original
-      repeated.entropy should not equal original.entropy
-      copied shouldBe original
-      json shouldBe s"\"$canonical\""
-      jsondecoded shouldBe Right(original)
-      collectionjson shouldBe s"\"${original.collection.value}\""
-      collectiondecoded shouldBe Right(original.collection)
-      URLDecoder.decode(encoded, StandardCharsets.UTF_8) shouldBe canonical
-      uri.getRawPath.stripPrefix("/entities/") shouldBe canonical
-      uri.getRawQuery.stripPrefix("id=") shouldBe encoded
-      form.stripPrefix("id=") shouldBe encoded
-      cli.get(2) shouldBe canonical
-      log should include(canonical)
-      datastore.getProperty(canonical) shouldBe "stored"
+      delimiterbridge shouldBe None
+      preepochrestore shouldBe None
+      submillisecondrestore shouldBe None
     }
   }
 
@@ -340,7 +340,13 @@ final class EntityIdSpec extends AnyWordSpec
     "preserve typed and structured EntityIds without creating a second scalar contract" in {
       Given("typed and structured Record inputs carrying a complete exact collection")
       val collection = EntityCollectionId("textus_blog", "blog_component", "blog_post")
-      val typed = EntityId("textus_blog", "editor_post", collection)
+      val typed = EntityId.bridgeFromParts(
+        "textus_blog",
+        "editor_post",
+        collection,
+        Instant.EPOCH,
+        "stable"
+      ).toOption.get
       val structured = Record.dataAuto(
         "id" -> Record.dataAuto(
           "major" -> "textus_blog",

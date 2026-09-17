@@ -13,7 +13,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 /*
  * @since   Jul. 25, 2026
- * @version Jul. 25, 2026
+ * @version Sep. 16, 2026
  * @author  ASAMI, Tomoharu
  */
 final class SimpleEntityRevisionSpec extends AnyWordSpec
@@ -31,6 +31,24 @@ final class SimpleEntityRevisionSpec extends AnyWordSpec
     )
 
   "SimpleEntity revision model" should {
+    "accept a restored generic EntityId at the generic SimpleEntity boundary" in {
+      Given("a complete EntityId supplied through the explicit special bridge")
+      val restoredid = EntityId.bridgeFromParts(
+        "test",
+        "entity",
+        EntityCollectionId("test", "entity", "sample"),
+        Instant.EPOCH,
+        "stable"
+      ).toOption.get
+
+      When("the identity is embedded in a generic SimpleEntity")
+      val entity = _entity(EntityRevision.createC(7L).toOption.get, id = restoredid)
+
+      Then("the model retains the generic restored identity without requiring generic issuance")
+      entity.id shouldBe restoredid
+      entity.id.eq(restoredid) shouldBe true
+    }
+
     "expose revision as one standard readable Entity attribute" in {
       Given("a SimpleEntity carrying a framework-managed revision")
       val revision = EntityRevision.createC(7L).toOption.get
@@ -80,10 +98,17 @@ final class SimpleEntityRevisionSpec extends AnyWordSpec
 
   private def _entity(
     revision: EntityRevision,
-    lifecycle: LifecycleAttributes = _lifecycle(Instant.EPOCH, Instant.EPOCH)
+    lifecycle: LifecycleAttributes = _lifecycle(Instant.EPOCH, Instant.EPOCH),
+    id: EntityId = EntityId.bridgeFromParts(
+      "test",
+      "entity",
+      EntityCollectionId("test", "entity", "sample"),
+      Instant.EPOCH,
+      "stable"
+    ).toOption.get
   ): TestEntity =
     TestEntity(
-      id = EntityId("test", "entity", EntityCollectionId("test", "entity", "sample")),
+      id = id,
       revision = revision,
       nameAttributes = NameAttributes.simple("sample"),
       descriptiveAttributes = DescriptiveAttributes.empty,

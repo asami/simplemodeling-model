@@ -8,7 +8,7 @@ lazy val root = project
   .settings(
     organization := "org.simplemodeling",
     name := "simplemodeling-model",
-    version := "0.2.1",
+    version := "0.2.2-SNAPSHOT",
 
     scalaVersion := scala3Version,
     Compile / scalacOptions += "-release:17",
