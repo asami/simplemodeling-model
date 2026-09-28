@@ -15,7 +15,8 @@ import org.goldenport.schema.XString
  *  version Mar. 29, 2026
  *  version Apr.  2, 2026
  *  version Apr. 17, 2026
- * @version May.  3, 2026
+ *  version May.  3, 2026
+ * @version Sep. 28, 2026
  * @author  ASAMI, Tomoharu
  */
 type DescriptiveAttributes = org.goldenport.value.DescriptiveAttributes
@@ -82,6 +83,6 @@ given ValueReader[DescriptiveAttributes] =
           description = DescriptiveAttributes._string_value(m, "description").map(I18nDescription(_))
         )
         Consequence.success(b.build())
-      case _ => Consequence.failValueInvalid(v, XString)
+      case _ => Consequence.valueInvalid(v, XString)
     }
   }

@@ -14,7 +14,8 @@ import org.simplemodeling.model.statemachine.Aliveness
  *  version Aug.  4, 2025
  *  version Feb. 19, 2026
  *  version Mar. 29, 2026
- * @version Apr. 25, 2026
+ *  version Apr. 25, 2026
+ * @version Sep. 28, 2026
  * @author  ASAMI, Tomoharu
  */
 case class LifecycleAttributes(
@@ -49,7 +50,7 @@ object LifecycleAttributes {
           aliveness = aliveness.getOrElse(Aliveness.default)
         )
       case _ =>
-        Consequence.failValueInvalid(v, org.goldenport.schema.XString)
+        Consequence.valueInvalid(v, org.goldenport.schema.XString)
 
   val defaultCreatedAt: Instant =
     Instant.EPOCH
@@ -67,8 +68,8 @@ object LifecycleAttributes {
       case m: String =>
         Try(Instant.parse(m.trim)).toOption match
           case Some(z) => Consequence.success(Some(z))
-          case None => Consequence.failValueInvalid(m, org.goldenport.schema.XString)
-      case m => Consequence.failValueInvalid(m, org.goldenport.schema.XString)
+          case None => Consequence.valueInvalid(m, org.goldenport.schema.XString)
+      case m => Consequence.valueInvalid(m, org.goldenport.schema.XString)
     }.toVector.headOption.getOrElse(Consequence.success(None))
 
   private def _get_identifier(record: Record, keys: String*): Consequence[Option[Identifier]] =

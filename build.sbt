@@ -11,7 +11,7 @@ lazy val root = project
     version := "0.2.2-SNAPSHOT",
 
     scalaVersion := scala3Version,
-    Compile / scalacOptions += "-release:17",
+    Compile / scalacOptions ++= Seq("-release:17", "-deprecation"),
     Compile / javacOptions ++= Seq("--release", "17"),
 
     cozyGeneratorBackend := "cozy",

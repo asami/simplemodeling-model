@@ -222,6 +222,43 @@ CNCF pattern-match warnings in `PlannedTransitionValidationHook.scala` and
 `UnitOfWorkProgramPlanning.scala`. They were not repaired to extend this incident
 batch. All touched repositories pass `git diff --check`.
 
+The following two model-owned observations are now assigned stable IDs for the
+2026-09-28 Hygiene batch. The original paragraph remains the historical discovery
+record; external-owner observations do not enlarge this model batch.
+
+#### HYG-MODEL-20260928-01 — Deprecated failure API calls
+
+Hygiene Status: RESOLVED
+Resolution Batch: simplemodeling-model:docs/journal/2026/09/2026-09-28-hygiene-resolution-batch-handoff.md
+Validated On: 2026-09-28
+Validation Evidence: invocation `model-hygiene-full-c122eb7e1aa04fed`; `sbt --batch clean test`; 97 passed, zero pending, zero warnings; receipt `/tmp/skill.cncf.d/cncf-command-execution-5ee84c5d33777e01ba2c80cdf524610de6487a245aee7c0888570e8d2814f7b6-f79e9e1ae0d6846b6f7f2e6c4c74b280/command-execution-sha256-f756832b848abad48707adc7be4eb9342bb4745c5b516b1d629b5f6bd9ad00ef` SHA-256 `f756832b848abad48707adc7be4eb9342bb4745c5b516b1d629b5f6bd9ad00ef`; lock released.
+Repository: simplemodeling-model
+Evidence: 71 Compile deprecations in 14 handwritten sources, located by a fresh
+`-deprecation` diagnostic compilation. Calls are deprecated `failure(message)`
+and `failValueInvalid(value, datatype)` entry points. Preserve their exact failure
+contracts through nondeprecated equivalents; no runtime behavior change.
+Hygiene Triage: HANDED_OFF
+Hygiene ID: HYG-MODEL-20260928-01
+Handoff Journal: simplemodeling-model:docs/journal/2026/09/2026-09-28-hygiene-resolution-batch-handoff.md
+Handed Off On: 2026-09-28
+
+#### HYG-MODEL-20260928-02 — Pending specification scaffolds
+
+Hygiene Status: RESOLVED
+Resolution Batch: simplemodeling-model:docs/journal/2026/09/2026-09-28-hygiene-resolution-batch-handoff.md
+Validated On: 2026-09-28
+Validation Evidence: invocation `model-hygiene-full-c122eb7e1aa04fed`; `sbt --batch clean test`; 97 passed, zero pending, zero warnings; receipt `/tmp/skill.cncf.d/cncf-command-execution-5ee84c5d33777e01ba2c80cdf524610de6487a245aee7c0888570e8d2814f7b6-f79e9e1ae0d6846b6f7f2e6c4c74b280/command-execution-sha256-f756832b848abad48707adc7be4eb9342bb4745c5b516b1d629b5f6bd9ad00ef` SHA-256 `f756832b848abad48707adc7be4eb9342bb4745c5b516b1d629b5f6bd9ad00ef`; lock released.
+Repository: simplemodeling-model
+Evidence: 27 `pending` statements in 14 specs, all existing generic scaffold cases.
+Replace them with executable descriptions of existing model delegation, readers
+and state-value contracts. Preserve the five existing executable LifecycleAttributes cases
+and all other prior executable scenarios; no model feature or policy change.
+Hygiene Triage: HANDED_OFF
+Hygiene ID: HYG-MODEL-20260928-02
+Handoff Journal: simplemodeling-model:docs/journal/2026/09/2026-09-28-hygiene-resolution-batch-handoff.md
+Handed Off On: 2026-09-28
+
+
 ### Development Candidate ledger and limits
 
 No new Development Candidate was admitted. Broader Cozy and sbt-cozy full suites,
