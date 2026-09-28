@@ -6,7 +6,7 @@ import org.goldenport.util.SmEnumClass
 
 /*
  * @since   Apr.  7, 2026
- * @version Apr.  7, 2026
+ * @version Sep. 28, 2026
  * @author  ASAMI, Tomoharu
  */
 enum ActivationStatus(
@@ -43,13 +43,13 @@ object ActivationStatus extends SmEnumClass[ActivationStatus] {
     def readC(v: Any): Consequence[ActivationStatus] = v match
       case m: ActivationStatus => Consequence.success(m)
       case n: Int =>
-        fromDbValue(n).map(Consequence.success).getOrElse(Consequence.failValueInvalid(v, org.goldenport.schema.XInt))
+        fromDbValue(n).map(Consequence.success).getOrElse(Consequence.valueInvalid(v, org.goldenport.schema.XInt))
       case n: Long if n.isValidInt =>
         readC(n.toInt)
       case s: String =>
-        s.trim.toIntOption.flatMap(fromDbValue).orElse(from(s)).map(Consequence.success).getOrElse(Consequence.failValueInvalid(v, org.goldenport.schema.XString))
+        s.trim.toIntOption.flatMap(fromDbValue).orElse(from(s)).map(Consequence.success).getOrElse(Consequence.valueInvalid(v, org.goldenport.schema.XString))
       case _ =>
-        Consequence.failValueInvalid(v, org.goldenport.schema.XString)
+        Consequence.valueInvalid(v, org.goldenport.schema.XString)
 
   private val _state_machine =
     StateMachineDef(

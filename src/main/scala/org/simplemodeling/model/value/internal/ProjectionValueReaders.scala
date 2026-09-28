@@ -7,7 +7,8 @@ import org.simplemodeling.model.value.{given, *}
 
 /*
  * @since   Apr. 21, 2026
- * @version May.  3, 2026
+ *  version May.  3, 2026
+ * @version Sep. 28, 2026
  * @author  ASAMI, Tomoharu
  */
 object ProjectionValueReaders {
@@ -36,7 +37,7 @@ object ProjectionValueReaders {
     new ValueReader[org.simplemodeling.model.value.AuditAttributes] {
       def readC(v: Any): Consequence[org.simplemodeling.model.value.AuditAttributes] = v match {
         case m: org.simplemodeling.model.value.AuditAttributes => Consequence.success(m)
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
     }
 
@@ -44,7 +45,7 @@ object ProjectionValueReaders {
     new ValueReader[org.simplemodeling.model.value.MediaAttributes] {
       def readC(v: Any): Consequence[org.simplemodeling.model.value.MediaAttributes] = v match {
         case m: org.simplemodeling.model.value.MediaAttributes => Consequence.success(m)
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
     }
 
@@ -52,7 +53,7 @@ object ProjectionValueReaders {
     new ValueReader[org.simplemodeling.model.value.ContextualAttributes] {
       def readC(v: Any): Consequence[org.simplemodeling.model.value.ContextualAttributes] = v match {
         case m: org.simplemodeling.model.value.ContextualAttributes => Consequence.success(m)
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
     }
 
@@ -60,7 +61,7 @@ object ProjectionValueReaders {
     new ValueReader[org.simplemodeling.model.value.BaseContent] {
       def readC(v: Any): Consequence[org.simplemodeling.model.value.BaseContent] = v match {
         case m: org.simplemodeling.model.value.BaseContent => Consequence.success(m)
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
     }
 }

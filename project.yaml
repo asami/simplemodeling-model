@@ -7,9 +7,7 @@ project:
 
 build:
   scalaVersion: "3.3.8"
-  dependencies:
-    compile:
-      - "org.goldenport::goldenport-cncf:0.5.2"
+  cozyVersion: "0.3.3-SNAPSHOT"
 
 packaging:
   kind: "maven"

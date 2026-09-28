@@ -28,7 +28,8 @@ import org.simplemodeling.model.directive.Update
 /*
  * @since   Mar. 23, 2026
  *  version Apr. 25, 2026
- * @version May.  4, 2026
+ *  version May.  4, 2026
+ * @version Sep. 28, 2026
  * @author  ASAMI, Tomoharu
  */
 // NOTE:
@@ -93,7 +94,7 @@ given ValueReader[ContentAttributesUpdate] =
           )
         }
       case s: String => Consequence.success(ContentAttributesUpdate(content = Update.set(ContentBody(s))))
-      case _ => Consequence.failValueInvalid(v, XString)
+      case _ => Consequence.valueInvalid(v, XString)
     }
   }
 

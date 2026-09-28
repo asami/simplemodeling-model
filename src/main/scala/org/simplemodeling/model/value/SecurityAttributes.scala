@@ -14,7 +14,8 @@ import org.goldenport.record.Record
  *  version Mar. 29, 2026
  *  version Apr. 20, 2026
  *  version May.  2, 2026
- * @version Jul. 15, 2026
+ *  version Jul. 15, 2026
+ * @version Sep. 28, 2026
  * @author  ASAMI, Tomoharu
  */
 case class SecurityAttributes(
@@ -42,7 +43,7 @@ object SecurityAttributes {
       case m: Record =>
         Consequence.successOrPropertyNotFound("securityAttributes", fromRecord(m))
       case _ =>
-        Consequence.failValueInvalid(v, org.goldenport.schema.XString)
+        Consequence.valueInvalid(v, org.goldenport.schema.XString)
 
   case class Rights(
     owner: Rights.Permissions,

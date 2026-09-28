@@ -16,7 +16,7 @@ SimpleModeling.org の model 専用プロジェクト。
 - `src/test/scala`: テスト
 - `docs`: 運用メモ・移管計画
 
-## 開発フロー（暫定）
+## 開発フロー
 
 1. `goldenport-core` から移管対象の基盤クラスを `src/main/scala` に移す
 2. `cml` から Value Object を生成し `target` 配下に出力する（`cozy`）
@@ -28,6 +28,20 @@ SimpleModeling.org の model 専用プロジェクト。
 ```bash
 sbt cozyGenerate
 ```
+
+This library uses the standard `sbt-cozy` `0.1.18-SNAPSHOT` bridge with
+`cozyGenerationTarget := "library"` and the exact Cozy `0.3.3-SNAPSHOT` runtime
+declared in both `build.sbt` and `project.yaml`. The standard bridge owns
+generation under `target/library-model/src_managed/main`; generated files are
+not edited by hand.
+
+The library target emits pure values, datatypes, powertypes, and plain
+state-machine types. It does not support CNCF runtime features such as entities,
+services, actions, workflows, provided operations, or candidate admission; a
+model using those features must select the `cncf` target. This library has no
+direct CNCF dependency. The exact Cozy runtime must be available through the
+normal Cozy launcher; a matching configured development runtime may satisfy the
+SNAPSHOT after `cozyExportRuntimeClasspath`.
 
 ## 次に着手する項目
 

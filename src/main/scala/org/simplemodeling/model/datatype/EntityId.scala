@@ -1,6 +1,6 @@
 package org.simplemodeling.model.datatype
 
-import org.goldenport.Consequence
+import org.goldenport.{Conclusion, Consequence}
 import java.time.Instant
 import io.circe.{Codec, Decoder, Encoder}
 import org.goldenport.id.UniversalId
@@ -92,7 +92,7 @@ private object EntityCollectionIdPayload {
  *  version Feb. 27, 2026
  *  version Mar. 31, 2026
  *  version May.  1, 2026
- * @version Sep. 16, 2026
+ * @version Sep. 28, 2026
  * @author  ASAMI, Tomoharu
  */
 abstract class EntityId protected (
@@ -143,7 +143,7 @@ object EntityId {
 
   given ValueReader[EntityId] with {
     def readC(v: Any): Consequence[EntityId] = Option(v) match {
-      case None => Consequence.failure("Invalid EntityId value: null")
+      case None => Consequence.Failure(Conclusion.simple("Invalid EntityId value: null"))
       case Some(value) => value match {
         case id: EntityId => Consequence.success(id)
         case Some(id: EntityId) => Consequence.success(id)
@@ -162,7 +162,7 @@ object EntityId {
       case Some(record: Record) => createC(record)
       case Some(v: String) if v.nonEmpty => parse(v)
       case Some(v) if v.toString.trim.nonEmpty => parse(v.toString.trim)
-      case Some(_) => Consequence.failure("Invalid EntityId value: empty")
+      case Some(_) => Consequence.Failure(Conclusion.simple("Invalid EntityId value: empty"))
       case None => _structured_record(p)
     }
 
@@ -193,8 +193,8 @@ object EntityId {
 
   private def _structured_record(p: Record): Consequence[EntityId] =
     for {
-      major <- p.getString("major").map(Consequence.success).getOrElse(Consequence.failure("Invalid EntityId record: missing major"))
-      minor <- p.getString("minor").map(Consequence.success).getOrElse(Consequence.failure("Invalid EntityId record: missing minor"))
+      major <- p.getString("major").map(Consequence.success).getOrElse(Consequence.Failure(Conclusion.simple("Invalid EntityId record: missing major")))
+      minor <- p.getString("minor").map(Consequence.success).getOrElse(Consequence.Failure(Conclusion.simple("Invalid EntityId record: missing minor")))
       collection <- _collection(p)
       timestamp <- _timestamp(p)
       entropy <- _entropy(p)
@@ -207,7 +207,7 @@ object EntityId {
       case Some(record: Record) => EntityCollectionId.createC(record)
       case Some(s: String) => EntityCollectionId.parse(s)
       case Some(other) => EntityCollectionId.parse(other.toString)
-      case None => Consequence.failure("Invalid EntityId record: missing complete collection")
+      case None => Consequence.Failure(Conclusion.simple("Invalid EntityId record: missing complete collection"))
     }
 
   private def _timestamp(p: Record): Consequence[Instant] =
@@ -217,14 +217,14 @@ object EntityId {
           .map(Consequence.success)
           .getOrElse(Consequence.valueInvalid("Invalid EntityId record: malformed timestamp"))
       case None =>
-        Consequence.failure("Invalid EntityId record: missing timestamp")
+        Consequence.Failure(Conclusion.simple("Invalid EntityId record: missing timestamp"))
     }
 
   private def _entropy(p: Record): Consequence[String] =
     p.getString("entropy") match {
       case Some(value) if _is_canonical_entropy(value) => Consequence.success(value)
       case Some(_) => Consequence.valueInvalid("Invalid EntityId record: malformed entropy")
-      case None => Consequence.failure("Invalid EntityId record: missing entropy")
+      case None => Consequence.Failure(Conclusion.simple("Invalid EntityId record: missing entropy"))
     }
 
   /**
@@ -292,7 +292,7 @@ object EntityCollectionId {
 
   given ValueReader[EntityCollectionId] with {
     def readC(v: Any): Consequence[EntityCollectionId] = Option(v) match {
-      case None => Consequence.failure("Invalid EntityCollectionId value: null")
+      case None => Consequence.Failure(Conclusion.simple("Invalid EntityCollectionId value: null"))
       case Some(value) => value match {
         case id: EntityCollectionId => Consequence.success(id)
         case Some(id: EntityCollectionId) => Consequence.success(id)
@@ -307,9 +307,9 @@ object EntityCollectionId {
 
   def createC(p: Record): Consequence[EntityCollectionId] =
     for {
-      major <- p.getString("major").map(Consequence.success).getOrElse(Consequence.failure("Invalid EntityCollectionId record: missing major"))
-      minor <- p.getString("minor").map(Consequence.success).getOrElse(Consequence.failure("Invalid EntityCollectionId record: missing minor"))
-      name <- p.getString("name").orElse(p.getString("collectionName")).orElse(p.getString("collection_name")).map(Consequence.success).getOrElse(Consequence.failure("Invalid EntityCollectionId record: missing name"))
+      major <- p.getString("major").map(Consequence.success).getOrElse(Consequence.Failure(Conclusion.simple("Invalid EntityCollectionId record: missing major")))
+      minor <- p.getString("minor").map(Consequence.success).getOrElse(Consequence.Failure(Conclusion.simple("Invalid EntityCollectionId record: missing minor")))
+      name <- p.getString("name").orElse(p.getString("collectionName")).orElse(p.getString("collection_name")).map(Consequence.success).getOrElse(Consequence.Failure(Conclusion.simple("Invalid EntityCollectionId record: missing name")))
       collection <- _create(major, minor, name)
     } yield collection
 
@@ -363,7 +363,7 @@ final case class AggregateCollectionId(
 object AggregateCollectionId {
   given ValueReader[AggregateCollectionId] with {
     def readC(v: Any): Consequence[AggregateCollectionId] = Option(v) match {
-      case None => Consequence.failure("Invalid AggregateCollectionId value: null")
+      case None => Consequence.Failure(Conclusion.simple("Invalid AggregateCollectionId value: null"))
       case Some(value) => value match {
         case id: AggregateCollectionId => Consequence.success(id)
         case s: String => parse(s)
@@ -392,7 +392,7 @@ final case class ViewCollectionId(
 object ViewCollectionId {
   given ValueReader[ViewCollectionId] with {
     def readC(v: Any): Consequence[ViewCollectionId] = Option(v) match {
-      case None => Consequence.failure("Invalid ViewCollectionId value: null")
+      case None => Consequence.Failure(Conclusion.simple("Invalid ViewCollectionId value: null"))
       case Some(value) => value match {
         case id: ViewCollectionId => Consequence.success(id)
         case s: String => parse(s)

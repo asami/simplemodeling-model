@@ -11,7 +11,8 @@ import org.goldenport.schema.XString
  * SimpleEntity content body and derived content-reference index.
  *
  * @since   May.  3, 2026
- * @version Jul. 16, 2026
+ *  version Jul. 16, 2026
+ * @version Sep. 28, 2026
  * @author  ASAMI, Tomoharu
  */
 type ContentBody = org.goldenport.value.ContentBody
@@ -25,7 +26,7 @@ object ContentBody {
       def readC(v: Any): Consequence[ContentBody] = v match {
         case m: org.goldenport.value.ContentBody => Consequence.success(m)
         case m: String => Consequence.success(ContentBody(m))
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
     }
 }
@@ -48,7 +49,7 @@ object ContentMarkup {
       def readC(v: Any): Consequence[ContentMarkup] = v match {
         case m: org.goldenport.value.ContentMarkup => Consequence.success(m)
         case m: String => parseC(m)
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
     }
 }
@@ -101,7 +102,7 @@ object ContentReferenceOccurrence {
       def readC(v: Any): Consequence[ContentReferenceOccurrence] = v match {
         case m: ContentReferenceOccurrence => Consequence.success(m)
         case m: Record => createC(m)
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
     }
 }
@@ -182,7 +183,7 @@ object ContentAttributes {
         case m: ContentAttributes => Consequence.success(m)
         case m: Record => createC(m)
         case s: String => Consequence.success(ContentAttributes(content = Some(ContentBody(s))))
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
     }
 

@@ -13,7 +13,8 @@ import org.goldenport.schema.XString
  *  version Jan. 21, 2026
  *  version Mar. 29, 2026
  *  version Apr.  2, 2026
- * @version Apr.  3, 2026
+ *  version Apr.  3, 2026
+ * @version Sep. 28, 2026
  * @author  ASAMI, Tomoharu
  */
 type NameAttributes = org.goldenport.value.NameAttributes
@@ -77,6 +78,6 @@ given ValueReader[NameAttributes] =
         Consequence.success(b.build())
       case m: Name => Consequence.success(NameAttributes.simple(m))
       case m: String => Consequence.success(NameAttributes.simple(m))
-      case _ => Consequence.failValueInvalid(v, XString)
+      case _ => Consequence.valueInvalid(v, XString)
     }
   }

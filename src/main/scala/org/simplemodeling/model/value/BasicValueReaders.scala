@@ -16,7 +16,8 @@ import org.goldenport.schema.XString
 /*
  * @since   Apr.  9, 2026
  *  version Apr. 25, 2026
- * @version May.  4, 2026
+ *  version May.  4, 2026
+ * @version Sep. 28, 2026
  * @author  ASAMI, Tomoharu
  */
 object BasicValueReaders
@@ -30,9 +31,9 @@ given ValueReader[MimeType] =
         case m: Record =>
           m.getString("value") match {
             case Some(s) => readC(s)
-            case None => Consequence.failValueInvalid(v, XString)
+            case None => Consequence.valueInvalid(v, XString)
           }
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
   }
 
@@ -44,18 +45,18 @@ given ValueReader[Charset] =
         case m: String =>
           val s = m.trim
           if (s.isEmpty)
-            Consequence.failValueInvalid(v, XString)
+            Consequence.valueInvalid(v, XString)
           else
             Try(Charset.forName(s)).toOption match {
               case Some(cs) => Consequence.success(cs)
-              case None => Consequence.failValueInvalid(v, XString)
+              case None => Consequence.valueInvalid(v, XString)
             }
         case m: Record =>
           m.getString("value") match {
             case Some(s) => readC(s)
-            case None => Consequence.failValueInvalid(v, XString)
+            case None => Consequence.valueInvalid(v, XString)
           }
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
   }
 
@@ -68,18 +69,18 @@ given ValueReader[LocalDate] =
         case m: String =>
           val s = m.trim
           if (s.isEmpty)
-            Consequence.failValueInvalid(v, XString)
+            Consequence.valueInvalid(v, XString)
           else
             Try(LocalDate.parse(s)).toOption match {
               case Some(d) => Consequence.success(d)
-              case None => Consequence.failValueInvalid(v, XString)
+              case None => Consequence.valueInvalid(v, XString)
             }
         case m: Record =>
           m.getString("value") match {
             case Some(s) => readC(s)
-            case None => Consequence.failValueInvalid(v, XString)
+            case None => Consequence.valueInvalid(v, XString)
           }
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
   }
 
@@ -91,18 +92,18 @@ given ValueReader[Instant] =
         case m: String =>
           val s = m.trim
           if (s.isEmpty)
-            Consequence.failValueInvalid(v, XString)
+            Consequence.valueInvalid(v, XString)
           else
             Try(Instant.parse(s)).toOption match {
               case Some(d) => Consequence.success(d)
-              case None => Consequence.failValueInvalid(v, XString)
+              case None => Consequence.valueInvalid(v, XString)
             }
         case m: Record =>
           m.getString("value") match {
             case Some(s) => readC(s)
-            case None => Consequence.failValueInvalid(v, XString)
+            case None => Consequence.valueInvalid(v, XString)
           }
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
   }
 
@@ -117,20 +118,20 @@ given ValueReader[ZonedDateTime] =
         case m: String =>
           val s = m.trim
           if (s.isEmpty)
-            Consequence.failValueInvalid(v, XString)
+            Consequence.valueInvalid(v, XString)
           else
             Try(ZonedDateTime.parse(s)).toOption
               .orElse(Try(OffsetDateTime.parse(s).toZonedDateTime).toOption)
               .orElse(Try(Instant.parse(s)).toOption.map(ZonedDateTime.ofInstant(_, ZoneId.systemDefault()))) match {
                 case Some(d) => Consequence.success(d)
-                case None => Consequence.failValueInvalid(v, XString)
+                case None => Consequence.valueInvalid(v, XString)
               }
         case m: Record =>
           m.getString("value") match {
             case Some(s) => readC(s)
-            case None => Consequence.failValueInvalid(v, XString)
+            case None => Consequence.valueInvalid(v, XString)
           }
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
   }
 
@@ -142,18 +143,18 @@ given ValueReader[URL] =
         case m: String =>
           val s = m.trim
           if (s.isEmpty)
-            Consequence.failValueInvalid(v, XString)
+            Consequence.valueInvalid(v, XString)
           else
             Try(new URL(s)).toOption match {
               case Some(url) => Consequence.success(url)
-              case None => Consequence.failValueInvalid(v, XString)
+              case None => Consequence.valueInvalid(v, XString)
             }
         case m: Record =>
           m.getString("value") match {
             case Some(s) => readC(s)
-            case None => Consequence.failValueInvalid(v, XString)
+            case None => Consequence.valueInvalid(v, XString)
           }
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
   }
 
@@ -165,15 +166,15 @@ given ValueReader[Locale] =
         case m: String =>
           val s = m.trim
           if (s.isEmpty)
-            Consequence.failValueInvalid(v, XString)
+            Consequence.valueInvalid(v, XString)
           else
             Consequence.success(Locale.forLanguageTag(s.replace('_', '-')))
         case m: Record =>
           m.getString("value") match {
             case Some(s) => readC(s)
-            case None => Consequence.failValueInvalid(v, XString)
+            case None => Consequence.valueInvalid(v, XString)
           }
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
   }
 
@@ -185,15 +186,15 @@ given ValueReader[TimeZone] =
         case m: String =>
           val s = m.trim
           if (s.isEmpty)
-            Consequence.failValueInvalid(v, XString)
+            Consequence.valueInvalid(v, XString)
           else
             Consequence.success(TimeZone.getTimeZone(s))
         case m: Record =>
           m.getString("value") match {
             case Some(s) => readC(s)
-            case None => Consequence.failValueInvalid(v, XString)
+            case None => Consequence.valueInvalid(v, XString)
           }
-        case _ => Consequence.failValueInvalid(v, XString)
+        case _ => Consequence.valueInvalid(v, XString)
       }
   }
 

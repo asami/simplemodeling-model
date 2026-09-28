@@ -11,7 +11,8 @@ import org.simplemodeling.model.statemachine.ActivationStatus
  * @since   Aug.  1, 2025
  *  version Aug.  2, 2025
  *  version Mar. 29, 2026
- * @version Apr. 13, 2026
+ *  version Apr. 13, 2026
+ * @version Sep. 28, 2026
  * @author  ASAMI, Tomoharu
  */
 case class ResourceAttributes(
@@ -38,7 +39,7 @@ object ResourceAttributes {
           activationStatus = activationstatus.getOrElse(ActivationStatus.default)
         )
       case _ =>
-        Consequence.failValueInvalid(v, org.goldenport.schema.XString)
+        Consequence.valueInvalid(v, org.goldenport.schema.XString)
 
   trait Holder {
     def resourceAttributes: ResourceAttributes
@@ -55,8 +56,8 @@ object ResourceAttributes {
       case m: String =>
         Try(ZonedDateTime.parse(m.trim)).toOption match
           case Some(z) => Consequence.success(Some(z))
-          case None => Consequence.failValueInvalid(m, org.goldenport.schema.XString)
-      case m => Consequence.failValueInvalid(m, org.goldenport.schema.XString)
+          case None => Consequence.valueInvalid(m, org.goldenport.schema.XString)
+      case m => Consequence.valueInvalid(m, org.goldenport.schema.XString)
     }.toVector.headOption.getOrElse(Consequence.success(None))
 
   private def _get_activation_status(record: Record, keys: String*): Consequence[Option[ActivationStatus]] =
