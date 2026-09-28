@@ -15,7 +15,10 @@ lazy val root = project
     Compile / javacOptions ++= Seq("--release", "17"),
 
     cozyGeneratorBackend := "cozy",
-    cozyDelegateProjectDir := Some(file("/Users/asami/src/dev2025/cozy")),
+    cozyDelegateProjectDir := None,
+    cozyDelegateCoursierVersion := Some("0.3.3-SNAPSHOT"),
+    cozyGenerationTarget := "library",
+    Compile / sourceManaged := target.value / "library-model" / "src_managed" / "main",
 
     resolvers ++= Seq(
       Resolver.defaultLocal,
@@ -35,7 +38,6 @@ lazy val root = project
       "io.circe" %% "circe-parser"  % "0.14.6",
 
       "org.goldenport" %% "goldenport-core" % "0.4.2",
-      "org.goldenport" %% "goldenport-cncf" % "0.5.2",
       // Testing
       "org.scalatest" %% "scalatest" % "3.2.18" % Test,
       "org.scalatestplus" %% "scalacheck-1-17" % "3.2.18.0" % Test,
