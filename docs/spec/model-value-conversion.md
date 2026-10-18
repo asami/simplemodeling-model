@@ -9,8 +9,16 @@ passed 54/54 in ten suites. Forced regeneration subsequently compiled the actual
 11 model products and inspected their thin encoder delegates, with the same
 54/54 coverage; these runs overlap. The connected Core/model/Modeler/CNCF Step
 is focused-validated and passed independent complete protected focused
-RCP-CONSUMERS Step review. Local commits, all four repository full tests, the sole
-comprehensive Phase 115 review and final release remain pending.
+RCP-CONSUMERS Step review.
+Phase 115 adoption is CLOSED and all five RCP obligations are DONE. Both
+connected Steps were independently reviewed and committed locally. The sole
+original Phase full review, retained Modeler repair1 focused closure and
+combined repair2–6 focused closure passed. The selected model full gate passed
+123 tests in 31 suites, zero failed/canceled/ignored/pending/aborted. The
+[Phase acceptance](../../../../dev2025/cloud-native-component-framework/docs/phase/phase-115.md#final-phase-acceptance--2026-10-18)
+and [checklist](../../../../dev2025/cloud-native-component-framework/docs/phase/phase-115-checklist.md)
+record all four selected full gates and retained failed history. Closure takes
+effect through the local release commit containing `phase115-final-closure-20261018-01@1`.
 
 The current selected presentation repair passed 56/56 in ten suites: 26 model
 conversion cases, including two added precedence scenarios, plus the original
@@ -19,11 +27,9 @@ succeeded, actual generated consumer integration passed 44/44 in five suites.
 The [CNCF Knowledge conversion specification](../../../../dev2025/cloud-native-component-framework/src/test/scala/org/goldenport/cncf/knowledge/Phase115KnowledgeExternalConversionSpec.scala)
 requires actual generated Information external and stored status to be selected
 strings. These runs overlap the historical 54/54 and forced-regeneration evidence
-and are not summed. All five RCP obligations remain OPEN and Phase 115 remains
-IN_PROGRESS; independent complete protected focused RCP-CONSUMERS Step review
-passed. Local commits, all four
-full tests, the sole comprehensive Phase review and final release remain pending.
-HYG-CNCF-P115-001 remains separate; no successor is activated.
+and are not summed. Final Phase acceptance is recorded above.
+HYG-CNCF-P115-001 and HYG-CNCF-P115-002 remain OPEN and nonblocking in their
+separate journal; no successor is activated.
 
 ## Responsibility
 
